@@ -126,3 +126,31 @@ for ("_i") from 1 to _unitCount do {
 	unitArray = waveUnits select 0;
 	unitArray append [_unit];
 };
+
+
+// ====== LAMBS TASKCREEP INTEGRATION ======
+// Apply tactical creeping behavior to spawned AI groups
+// Requires LAMBS_Danger mod - gracefully falls back to vanilla if not present
+if (isClass(configFile >> "CfgPatches" >> "lambs_danger")) then {
+	private _groupsToProcess = [];
+	{
+		private _unitGrp = group _x;
+		if (!(_unitGrp in _groupsToProcess)) then {
+			_groupsToProcess pushBack _unitGrp;
+		};
+	} forEach (waveUnits select 0);
+	
+	{
+		if (count units _x > 0) then {
+			// Spawn taskCreep for each unique group
+			// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers]
+			// trackingRadius: 600m - how far AI will track enemies
+			// updateCycle: 20s - how often AI updates behavior
+			// areaRestriction: [] - no area limits
+			// centerPos: [] - dynamically follows players
+			// onlyPlayers: true - only targets player units
+			[_x, 600, 20, [], [], true] spawn lambs_wp_fnc_taskCreep;
+		};
+	} forEach _groupsToProcess;
+};
+// ====== END TASKCREEP INTEGRATION ======
