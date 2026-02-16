@@ -128,29 +128,52 @@ for ("_i") from 1 to _unitCount do {
 };
 
 
-// ====== LAMBS TASKCREEP INTEGRATION ======
-// Apply tactical creeping behavior to spawned AI groups
+// ====== LAMBS TACTICAL BEHAVIOR SYSTEM ======
+// Applies randomized LAMBS Danger FSM task behaviors to spawned AI groups
+// Five behavior options: taskCreep, taskCQB, taskHunt, taskRush, or Vanilla (no LAMBS)
 // Requires LAMBS_Danger mod - gracefully falls back to vanilla if not present
 if (isClass(configFile >> "CfgPatches" >> "lambs_danger")) then {
 	private _groupsToProcess = [];
 	{
 		private _unitGrp = group _x;
-		if (!(_unitGrp in _groupsToProcess)) then {
+		if (! (_unitGrp in _groupsToProcess)) then {
 			_groupsToProcess pushBack _unitGrp;
 		};
 	} forEach (waveUnits select 0);
 	
 	{
 		if (count units _x > 0) then {
-			// Spawn taskCreep for each unique group
-			// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers]
-			// trackingRadius: 600m - how far AI will track enemies
-			// updateCycle: 20s - how often AI updates behavior
-			// areaRestriction: [] - no area limits
-			// centerPos: [] - dynamically follows players
-			// onlyPlayers: true - only targets player units
-			[_x, 600, 20, [], [], true] spawn lambs_wp_fnc_taskCreep;
+			// Randomly select behavior (0-4): 0=Creep, 1=CQB, 2=Hunt, 3=Rush, 4=Vanilla
+			private _behaviorType = floor (random 5);
+			
+			switch (_behaviorType) do {
+				case 0: {
+					// taskCreep: Stealthy approach, holds fire until close (~40m)
+					// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers]
+					[_x, 600, 20, [], [], true] spawn lambs_wp_fnc_taskCreep;
+				};
+				case 1: {
+					// taskCQB: Building clearing operations
+					// Parameters: [group, targetPos, searchRadius, updateCycle, areaRestriction]
+					// Target bulwark position for CQB operations
+					[_x, getPos bulwarkCity, 150, 25, []] spawn lambs_wp_fnc_taskCQB;
+				};
+				case 2: {
+					// taskHunt: Deliberate tracking with optional flares
+					// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers, enableReinforcement, doUGL]
+					[_x, 500, 15, [], [], true, false, 1] spawn lambs_wp_fnc_taskHunt;
+				};
+				case 3: {
+					// taskRush: Aggressive rushing attack
+					// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers]
+					[_x, 500, 15, [], [], true] spawn lambs_wp_fnc_taskRush;
+				};
+				case 4: {
+					// Vanilla: No LAMBS behavior, uses default Arma AI
+					// Group will use standard movement and combat behavior
+				};
+			};
 		};
 	} forEach _groupsToProcess;
 };
-// ====== END TASKCREEP INTEGRATION ======
+// ====== END LAMBS TACTICAL BEHAVIOR SYSTEM ======
