@@ -94,7 +94,7 @@ switch (_weatherParam) do {
 		0 setOvercast 0;
 		0 setRain 0;
 		0 setFog 0;
-		0 setWind [0, 0, false];
+		setWind [0, 0];
 	};
 	case 1: { // Overcast
 		0 setOvercast 0.65;
@@ -105,7 +105,7 @@ switch (_weatherParam) do {
 		0 setOvercast 0.85;
 		0 setRain 0.4;
 		0 setFog 0.1;
-		0 setWind [3, 3, true];
+		setWind [3, 3];
 	};
 	case 3: { // Foggy
 		0 setOvercast 0.3;
@@ -116,7 +116,7 @@ switch (_weatherParam) do {
 		0 setOvercast 1;
 		0 setRain 0.8;
 		0 setFog 0.15;
-		0 setWind [8, 8, true];
+		setWind [8, 8];
 	};
 };
 
