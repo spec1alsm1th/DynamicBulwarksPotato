@@ -18,7 +18,7 @@ private _preferredHelis = switch (_factionParam) do {
     case 4: { ["O_Heli_Attack_02_F", "O_Heli_Attack_01_F"] };                                          // Contact - fall back to vanilla CSAT
     case 5: { ["O_W_Heli_Attack_01_F", "O_Heli_Attack_02_F"] };                                        // Western Sahara
     case 6: { ["gm_gc_airforce_mi2urn", "gm_gc_airforce_mi2us"] };                                     // Global Mobilization (East German Mi-2)
-    case 7: { ["vn_o_air_mi2_04_02", "vn_o_air_mi2_04_03", "vn_o_air_mi2_05_04"] };                   // S.O.G. Prairie Fire (PAVN Mi-2)
+    case 7: { ["vn_o_air_mi2_04_01", "vn_o_air_mi2_04_02", "vn_o_air_mi2_04_04"] };                   // S.O.G. Prairie Fire (PAVN Mi-2 armed, verified from OSAT)
     case 8: { ["CSLA_Mi24V"] };                                                                         // CSLA Iron Curtain
     default { ["O_Heli_Attack_02_F"] };
 };

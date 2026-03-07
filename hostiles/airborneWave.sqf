@@ -43,7 +43,7 @@ private _preferredTransports = switch (_factionParam) do {
 	case 4: { ["O_Heli_Light_02_F", "O_Heli_Transport_04_F"] };          // Contact (fallback)
 	case 5: { ["O_W_Heli_Light_01_F", "O_Heli_Light_02_F"] };            // Western Sahara
 	case 6: { ["gm_gc_airforce_mi2t"] };                                   // Global Mobilization
-	case 7: { ["vn_o_air_mi2_01_01", "vn_o_air_mi2_01_02"] };            // S.O.G. Prairie Fire
+	case 7: { ["vn_o_air_mi2_01_01", "vn_o_air_mi2_01_02", "vn_o_air_mi2_01_03"] };  // S.O.G. Prairie Fire (PAVN transport Mi-2, verified from OSAT)
 	case 8: { ["CSLA_Mi8T", "CSLA_Mi8"] };                                // CSLA Iron Curtain
 	default { ["O_Heli_Light_02_F"] };
 };
