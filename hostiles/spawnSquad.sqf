@@ -104,6 +104,16 @@ for ("_i") from 1 to _unitCount do {
 		_unit addEventHandler ["Killed", CreateHostiles_fnc_suiExplode];
 	};
 
+	// Random optic — probability scales with wave number, skipped on pistol-only waves
+	if (_attackWave > PISTOL_HOSTILES && primaryWeapon _unit != "") then {
+		private _opticChance = (_attackWave / 40) min 0.75;
+		if (random 1 < _opticChance) then {
+			_unit addPrimaryWeaponItem selectRandom [
+				"optic_MRCO", "optic_LRPS", "optic_SOS", "optic_KHS_blk", "optic_Hamr", "optic_Arco"
+			];
+		};
+	};
+
 	mainZeus addCuratorEditableObjects [[_unit], true];
 	unitArray = waveUnits select 0;
 	unitArray append [_unit];

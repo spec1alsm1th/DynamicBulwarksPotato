@@ -1,5 +1,5 @@
 _player = _this select 0;
-_buildPhase = bulwarkBox getVariable ["buildPhase", true];
+_buildPhase = if (!isNil "bulwarkBox") then { bulwarkBox getVariable ["buildPhase", true] } else { true };
 
 if (!_buildPhase) then { // free respawn in build phase
 	_respawnTickets = [west, -1] call BIS_fnc_respawnTickets;

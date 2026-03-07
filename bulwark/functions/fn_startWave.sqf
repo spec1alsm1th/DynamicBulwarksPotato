@@ -86,65 +86,28 @@ SpecialWaveType = "";
 droneCount = 0;
 
 if (specialWave && attkWave >= 5 and attkWave < 10) then {
-	_randWave = floor random 3;
-	switch (_randWave) do
-	{
-		case 0:
-		{
-			SpecialWaveType = "specCivs";
-		};
-		case 1:
-		{
-			SpecialWaveType = "fogWave";
-		};
-		case 2:
-		{
-			SpecialWaveType = "swticharooWave";
-		};
-	};
+	SpecialWaveType = selectRandom ["specCivs", "fogWave", "swticharooWave"];
 	wavesSinceSpecial = 0;
 };
 
 if (specialWave && attkWave >= 10) then {
-	_randWave = floor random 8;
-	switch (_randWave) do
-	{
-		case 0:
-		{
-			SpecialWaveType = "specCivs";
-		};
-		case 1:
-		{
-			SpecialWaveType = "fogWave";
-		};
-		case 2:
-		{
-			SpecialWaveType = "swticharooWave";
-		};
-		case 3:
-		{
-			SpecialWaveType = "suicideWave";
-		};
-		case 4:
-		{
-			SpecialWaveType = "specMortarWave";
-		};
-		case 5:
-		{
-			SpecialWaveType = "nightWave";
-		};
-		case 6:
-		{
-			SpecialWaveType = "demineWave";
-		};
-		case 7:
-		{
-			SpecialWaveType = "defectorWave";
-		};
+	private _wavePool = [
+		"specCivs", "fogWave", "swticharooWave", "suicideWave",
+		"specMortarWave", "nightWave", "demineWave", "defectorWave"
+	];
+	if ("HOSTAGE_WAVE" call BIS_fnc_getParamValue == 1) then {
+		_wavePool pushBack "hostageWave";
 	};
+	if ("AIRBORNE_WAVE" call BIS_fnc_getParamValue == 1) then {
+		_wavePool pushBack "airborneWave";
+	};
+	if ("BOMB_WAVE" call BIS_fnc_getParamValue == 1) then {
+		_wavePool pushBack "bombWave";
+	};
+	SpecialWaveType = selectRandom _wavePool;
 	wavesSinceSpecial = 0;
 //}else{
-	//SpecialWaveType = "swticharooWave"; //else for testing new special waves: do not remove
+	//SpecialWaveType = "airborneWave"; //else for testing new special waves: do not remove
 };
 
 if (SpecialWaveType == "suicideWave") then {
@@ -202,6 +165,28 @@ if (SpecialWaveType == "defectorWave") then {
 	defectorWave = true;
 }else{
 	defectorWave = false;
+};
+
+if (SpecialWaveType == "hostageWave") then {
+	hostageWave = true;
+	hostageUnit = objNull;
+	[] execVM "hostiles\hostageWave.sqf";
+} else {
+	hostageWave = false;
+};
+
+if (SpecialWaveType == "airborneWave") then {
+	airborneWave = true;
+	[] execVM "hostiles\airborneWave.sqf";
+} else {
+	airborneWave = false;
+};
+
+if (SpecialWaveType == "bombWave") then {
+	bombWave = true;
+	[] execVM "hostiles\bombWave.sqf";
+} else {
+	bombWave = false;
 };
 
 //Notify start of wave and type of wave
@@ -273,6 +258,21 @@ if (demineWave) then {
 if (defectorWave) then {
 	["SpecialWarning",["NATO Defectors Are Attacking Us!"]] remoteExec ["BIS_fnc_showNotification", 0];
 	["Alarm"] remoteExec ["playSound", 0];
+};
+
+if (hostageWave) then {
+	["Alarm"] remoteExec ["playSound", 0];
+	// Notification with player name is sent inside hostageWave.sqf after the hostage is chosen
+};
+
+if (airborneWave) then {
+	["SpecialWarning", ["AIRBORNE ASSAULT! Enemy forces inbound by air!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	["Alarm"] remoteExec ["playSound", 0];
+};
+
+if (bombWave) then {
+	["Alarm"] remoteExec ["playSound", 0];
+	// Full notification with timer is sent inside bombWave.sqf
 };
 
 if (!specialWave) then {

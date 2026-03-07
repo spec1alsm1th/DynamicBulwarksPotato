@@ -244,8 +244,8 @@ class Params
 	class DOWN_TIME
 	{
 		title = "Time between rounds";
-		values[] = {0, 15, 30, 60, 90, 120, 180, 240, 300};
-		texts[] = {"0", "15 Seconds", "30 Seconds", "1 Minute", "1 Minute 30 Seconds", "2 Minutes", "3 Minutes", "4 Minutes", "5 Minutes"};
+		values[] = {0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300};
+		texts[] = {"0","15s","30s","45s","1m","1m15s","1m30s","1m45s","2m","2m15s","2m30s","2m45s","3m","3m15s","3m30s","3m45s","4m","4m15s","4m30s","4m45s","5m"};
 		default = 60;
 	};
 
@@ -289,12 +289,60 @@ class Params
 		default = 0;
 	};
 
+	class ENGINEER_TOOLKIT
+	{
+		title = "Players start with ToolKit (allows mine defusal and vehicle repair)";
+		values[] = {0, 1};
+		texts[] = {"No", "Yes"};
+		default = 0;
+	};
+
 	class SPECIAL_WAVES
 	{
 		title = "Special Waves - suicide bombers, etc";
 		values[] = {0, 1};
 		texts[] = {"No", "Yes"};
 		default = 1;
+	};
+
+	class HOSTAGE_WAVE
+	{
+		title = "Hostage Rescue - one player taken hostage, others must rescue";
+		values[] = {0, 1};
+		texts[] = {"Disabled", "Enabled"};
+		default = 0;
+	};
+
+	class HOSTAGE_TIMER
+	{
+		title = "Hostage Rescue - execution timer";
+		values[] = {0, 180, 300, 420};
+		texts[] = {"No timer", "3 minutes", "5 minutes", "7 minutes"};
+		default = 300;
+	};
+
+	class AIRBORNE_WAVE
+	{
+		title = "Airborne Assault - enemy forces arrive by helicopter and parachute instead of on foot";
+		values[] = {0, 1};
+		texts[] = {"Disabled", "Enabled"};
+		default = 0;
+	};
+
+	class BOMB_WAVE
+	{
+		title = "Bomb Defusal - a bomb is planted in the Bulwark, defuse it with a ToolKit";
+		values[] = {0, 1};
+		texts[] = {"Disabled", "Enabled"};
+		default = 0;
+	};
+
+	class BOMB_TIMER
+	{
+		title = "Bomb Defusal - time to defuse";
+		values[] = {180, 300, 420};
+		texts[] = {"3 minutes", "5 minutes", "7 minutes"};
+		default = 300;
 	};
 
 	class ARMOUR_START_WAVE

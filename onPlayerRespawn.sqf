@@ -44,6 +44,9 @@ removeAllWeapons _player;
 removeAllAssignedItems _player;
 _player setPosASL ([bulwarkBox] call bulwark_fnc_findPlaceAround);
 
+// Wait for editMe variables to be broadcast before reading them
+waitUntil { !isNil "PLAYER_STARTMAP" };
+
 if(PLAYER_STARTWEAPON) then {
     _player addMagazine "16Rnd_9x21_Mag";
     _player addMagazine "16Rnd_9x21_Mag";
@@ -60,6 +63,10 @@ if(PLAYER_STARTNVG) then {
     _player addItem "Integrated_NVG_F";
     _player assignItem "Integrated_NVG_F";
     _player linkItem "Integrated_NVG_F";
+};
+
+if ("ENGINEER_TOOLKIT" call BIS_fnc_getParamValue == 1) then {
+    _player addItem "ToolKit";
 };
 
 if (isClass (configfile >> "CfgVehicles" >> "tf_anarc164")) then {
