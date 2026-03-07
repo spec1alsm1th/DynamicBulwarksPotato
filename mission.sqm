@@ -204,7 +204,7 @@ class Mission
 	assetType="Free";
 	class Intel
 	{
-		briefingName="Dynamic Bulwarks";
+		briefingName="Dynamic Bulwarks - FDFk Edition (Original by Omnios & Hilltop)";
 		resistanceWest=0;
 		resistanceEast=1;
 		timeOfChanges=1800.0002;
