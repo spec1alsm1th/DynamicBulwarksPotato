@@ -193,8 +193,7 @@ if (SpecialWaveType == "swticharooWave") then {
 
 if (SpecialWaveType == "demineWave") then {
 	demineWave = true;
-	droneSquad = [];
-	execVM "hostiles\droneFire.sqf";
+	execVM "hostiles\spawnHelicopterWave.sqf";
 }else{
 	demineWave = false;
 };
@@ -267,7 +266,7 @@ if (swticharooWave) then {
 };
 
 if (demineWave) then {
-	["SpecialWarning",["Look up! They're sending drones!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	["SpecialWarning",["ATTACK HELICOPTERS! Incoming air attack!"]] remoteExec ["BIS_fnc_showNotification", 0];
 	["Alarm"] remoteExec ["playSound", 0];
 };
 

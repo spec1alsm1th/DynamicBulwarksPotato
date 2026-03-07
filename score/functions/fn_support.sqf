@@ -9,7 +9,7 @@
 _player   = _this select 0;
 _target   = _this select 1;
 _type     = _this select 2;
-_aircraft = _this select 3;
+_aircraft = if (!isNil "SUPPORT_AIRCRAFT") then { SUPPORT_AIRCRAFT } else { _this select 3 };
 
 switch (_type) do {
     case ("paraTroop"): {

@@ -37,4 +37,24 @@ _unit addEventHandler ["Killed", killPoints_fnc_killed];
 
 mainZeus addCuratorEditableObjects [[_unit], true];
 
+// Replace weapon with faction-appropriate one if loot faction filtering is active
+private _lootFaction = "LOOT_FACTION" call BIS_fnc_getParamValue;
+if (_lootFaction != 0) then {
+	_unitPrimaryWeap = primaryWeapon _unit;
+	_primaryAmmoTpyes = getArray (configFile >> "CfgWeapons" >> _unitPrimaryWeap >> "magazines");
+	{
+		if (_x in _primaryAmmoTpyes) then {
+			_unit removeMagazineGlobal _x;
+		};
+	} forEach magazines _unit;
+	_unitPrimaryToAdd = selectRandom List_Primaries;
+	_unitMagToAdd = selectRandom getArray (configFile >> "CfgWeapons" >> _unitPrimaryToAdd >> "magazines");
+	_unit addWeaponGlobal _unitPrimaryToAdd;
+	_unit addPrimaryWeaponItem _unitMagToAdd;
+	_unit addMagazine _unitMagToAdd;
+	_unit addMagazine _unitMagToAdd;
+	_unit addMagazine _unitMagToAdd;
+	_unit selectWeapon _unitPrimaryToAdd;
+};
+
 removeAllAssignedItems _unit;

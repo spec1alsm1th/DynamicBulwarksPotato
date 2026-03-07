@@ -34,6 +34,20 @@ for ("_i") from 1 to ((floor attkWave / 2) + (floor count allPlayers * 1.5)) do 
 	_unit addEventHandler ["Hit", killPoints_fnc_hit];
 	_unit addEventHandler ["Killed", killPoints_fnc_killed];
     _unit setVariable ["killPointMulti", HOSTILE_LEVEL_1_POINT_SCORE];
+	// Replace weapon with faction-appropriate one if loot faction filtering is active
+	if (("LOOT_FACTION" call BIS_fnc_getParamValue) != 0) then {
+		private _unitPrimaryWeap = primaryWeapon _unit;
+		private _primaryAmmoTpyes = getArray (configFile >> "CfgWeapons" >> _unitPrimaryWeap >> "magazines");
+		{ if (_x in _primaryAmmoTpyes) then { _unit removeMagazineGlobal _x; }; } forEach magazines _unit;
+		private _unitPrimaryToAdd = selectRandom List_Primaries;
+		private _unitMagToAdd = selectRandom getArray (configFile >> "CfgWeapons" >> _unitPrimaryToAdd >> "magazines");
+		_unit addWeaponGlobal _unitPrimaryToAdd;
+		_unit addPrimaryWeaponItem _unitMagToAdd;
+		_unit addMagazine _unitMagToAdd;
+		_unit addMagazine _unitMagToAdd;
+		_unit addMagazine _unitMagToAdd;
+		_unit selectWeapon _unitPrimaryToAdd;
+	};
 	removeAllAssignedItems _unit;
 	mainZeus addCuratorEditableObjects [[_unit], true];
     unitArray = waveUnits select 0;

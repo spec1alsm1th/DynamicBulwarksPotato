@@ -166,4 +166,5 @@ _roomCount = 0;
 } forEach lootHouses;
 
 /* Supply Drop */
-[bulwarkCity, ["<t color='#00ff00'>" + "FILL AMMO", "supports\ammoDrop.sqf","",2,true,false,"true","true",4], "B_T_VTOL_01_vehicle_F"] remoteExec ["supports_fnc_supplyDrop", 2];
+private _supAircraft = if (!isNil "SUPPORT_AIRCRAFT") then { SUPPORT_AIRCRAFT } else { "B_T_VTOL_01_vehicle_F" };
+[bulwarkCity, ["<t color='#00ff00'>" + "FILL AMMO", "supports\ammoDrop.sqf","",2,true,false,"true","true",4], _supAircraft] remoteExec ["supports_fnc_supplyDrop", 2];

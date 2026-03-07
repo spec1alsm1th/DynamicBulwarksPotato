@@ -193,6 +193,22 @@ class Params
 		default = 0;
 	};
 
+	class HOSTILE_FACTION
+	{
+		title = "Enemy Faction (requires DLC/mod)";
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+		texts[] = {"Vanilla (CSAT/AAF/Viper)", "CUP (Takistani/Russian/ChDKZ)", "RHS (MSV/VDV/AFRF)", "Apex (CSAT Pacific/Viper)", "Contact (LDF)", "Western Sahara (Tura/Sefrawi/ION)", "Global Mobilization (East German)", "S.O.G. Prairie Fire (PAVN/VC)", "CSLA Iron Curtain (CSLA)"};
+		default = 0;
+	};
+
+	class LOOT_FACTION
+	{
+		title = "Weapon, Gear & Vehicle Faction (requires DLC/mod)";
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7};
+		texts[] = {"All loaded content", "Vanilla + official DLC only", "CUP", "RHS", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Match enemy faction"};
+		default = 0;
+	};
+
 	class HOSTILE_MULTIPLIER
 	{
 		title = "Number of hostiles per wave";

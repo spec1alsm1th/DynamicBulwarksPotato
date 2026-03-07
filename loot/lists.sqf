@@ -6,6 +6,47 @@
 *  Domain: Server
 **/
 
+// Read loot/equipment faction parameter
+private _lootFactionParam = ["LOOT_FACTION", 0] call BIS_fnc_getParamValue;
+
+// Handle "Match enemy faction" option (value 7)
+if (_lootFactionParam == 7) then {
+    private _hostileFaction = ["HOSTILE_FACTION", 0] call BIS_fnc_getParamValue;
+    _lootFactionParam = switch (_hostileFaction) do {
+        case 1: { 2 };   // CUP enemies -> CUP loot
+        case 2: { 3 };   // RHS enemies -> RHS loot
+        case 6: { 4 };   // GM enemies -> GM loot
+        case 7: { 5 };   // SOG enemies -> SOG loot
+        case 8: { 6 };   // CSLA enemies -> CSLA loot
+        default { 1 };   // Vanilla/Apex/Contact/WS -> Vanilla loot
+    };
+};
+
+private _filterLoot = _lootFactionParam != 0;
+
+// Filter function: checks classname prefix to determine if item belongs to selected faction
+private _passesLootFilter = switch (_lootFactionParam) do {
+    case 1: {
+        // Vanilla + official DLCs: exclude known mod/CDLC prefixes
+        {
+            private _n = toLower (configName _this);
+            !((_n select [0,4]) == "cup_") &&
+            {!((_n select [0,3]) == "rhs")} &&
+            {!((_n select [0,3]) == "gm_")} &&
+            {!((_n select [0,3]) == "vn_")} &&
+            {!((_n select [0,5]) == "csla_")}
+        }
+    };
+    case 2: { { (toLower (configName _this) select [0,4]) == "cup_" } };
+    case 3: { { (toLower (configName _this) select [0,3]) == "rhs" } };
+    case 4: { { (toLower (configName _this) select [0,3]) == "gm_" } };
+    case 5: { { (toLower (configName _this) select [0,3]) == "vn_" } };
+    case 6: { { (toLower (configName _this) select [0,5]) == "csla_" } };
+    default { { true } };
+};
+
+diag_log format ["DynBulwarks: Loot faction filter = %1 (filterActive = %2)", _lootFactionParam, _filterLoot];
+
 _hats = [];
 _uniforms = [];
 _vests = [];
@@ -25,7 +66,7 @@ _count =  count (configFile >> "CfgWeapons");
 for "_x" from 0 to (_count-1) do {
 	_weap = ((configFile >> "CfgWeapons") select _x);
 	if (isClass _weap) then {
-		if (getnumber (_weap >> "scope") == 2) then {
+		if (getnumber (_weap >> "scope") == 2 && {!_filterLoot || {_weap call _passesLootFilter}}) then {
 			if (isClass (_weap >> "ItemInfo")) then {
 				_infoType = (getnumber (_weap >> "ItemInfo" >> "Type"));
 				switch (_infoType) do {
@@ -65,7 +106,7 @@ _count =  count (configFile >> "CfgVehicles");
 for "_x" from 0 to (_count-1) do {
     _item=((configFile >> "CfgVehicles") select _x);
     if (isClass _item) then {
-        if (getnumber (_item >> "scope") == 2) then {
+        if (getnumber (_item >> "scope") == 2 && {!_filterLoot || {_item call _passesLootFilter}}) then {
             if (gettext (_item >> "vehicleClass") == "Backpacks") then {
                 _backpacks = _backpacks + [configname _item]
             };
@@ -77,7 +118,7 @@ _count =  count (configFile >> "CfgGlasses");
 for "_x" from 0 to (_count-1) do {
     _item=((configFile >> "CfgGlasses") select _x);
     if (isClass _item) then {
-        if (getnumber (_item >> "scope") == 2) then {
+        if (getnumber (_item >> "scope") == 2 && {!_filterLoot || {_item call _passesLootFilter}}) then {
             _glasses = _glasses + [configName _item];
         };
     };
@@ -91,7 +132,7 @@ for "_x" from 0 to (_count-1) do {
 _count =  count (configFile >> "CfgMagazines");
 for "_x" from 0 to (_count-1) do {
     _item=((configFile >> "CfgMagazines") select _x);
-	if (isClass _item) then {
+	if (isClass _item && {!_filterLoot || {_item call _passesLootFilter}}) then {
 		if(getNumber (_item >> "value") == 5) then {
 			if(["mine", getText (_item >> "displayName")] call BIS_fnc_inString) then {
 				_mines = _mines + [configName _item];
@@ -104,7 +145,7 @@ _count =  count (configFile >> "CfgMagazines");
 _chargeType = getText (configfile >> "CfgMagazines" >> "DemoCharge_Remote_Mag" >> "type");
 for "_x" from 0 to (_count-1) do {
   _item=((configFile >> "CfgMagazines") select _x);
-	if (isClass _item) then {
+	if (isClass _item && {!_filterLoot || {_item call _passesLootFilter}}) then {
 		if (gettext (_item >> "type") == _chargeType && ["remote", configName _item] call BIS_fnc_inString) then {
 			_charges = _charges + [configName _item];
 		};
@@ -114,7 +155,7 @@ for "_x" from 0 to (_count-1) do {
 _count =  count (configFile >> "CfgMagazines");
 for "_x" from 0 to (_count-1) do {
     _item=((configFile >> "CfgMagazines") select _x);
-	if (isClass _item) then {
+	if (isClass _item && {!_filterLoot || {_item call _passesLootFilter}}) then {
 		if(getNumber (_item >> "type") == 16 || getNumber (_item >> "type") == 256) then {
 			if(["grenade", getText (_item >> "displayName")] call BIS_fnc_inString && !(["smoke", getText (_item >> "displayName")] call BIS_fnc_inString)) then {
 				_grenades = _grenades + [configName _item];

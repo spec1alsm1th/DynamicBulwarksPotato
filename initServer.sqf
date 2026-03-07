@@ -2,6 +2,10 @@
 playersInWave = [];
 publicVariable "playersInWave";
 
+// Bulwark position chosen by host/admin (published from pickBulwarkPos.sqf)
+DB_specBulwarkPos = [];
+publicVariable "DB_specBulwarkPos";
+
 ["<t size = '.5'>Loading lists.<br/>Please wait...</t>", 0, 0, 10, 0] remoteExec ["BIS_fnc_dynamicText", 0];
 _hLocation = [] execVM "locationLists.sqf";
 _hLoot     = [] execVM "loot\lists.sqf";
@@ -13,6 +17,23 @@ waitUntil {
 };
 _hConfig   = [] execVM "editMe.sqf";
 waitUntil { scriptDone _hConfig };
+
+// Wait for host/admin to pick bulwark position (only needed when using List_SpecificPoint)
+private _t0 = time;
+waitUntil {
+    ((DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) ) || ((time - _t0) > 300)
+};
+
+if (DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) then {
+    private _pos = DB_specBulwarkPos;
+
+    if (getMarkerColor "specBulwarkLoc" == "") then {
+        createMarker ["specBulwarkLoc", _pos];
+        "specBulwarkLoc" setMarkerType "mil_dot";
+        "specBulwarkLoc" setMarkerText "Bulwark Location";
+    };
+    "specBulwarkLoc" setMarkerPos _pos;
+};
 
 ["<t size = '.5'>Creating Base...</t>", 0, 0, 30, 0] remoteExec ["BIS_fnc_dynamicText", 0];
 _basepoint = [] execVM "bulwark\createBase.sqf";

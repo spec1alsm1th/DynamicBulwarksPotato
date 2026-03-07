@@ -32,6 +32,10 @@ player setVariable ["killPoints", _killPoints, true];
 
 hitMarkers = [];
 
+if (isServer || serverCommandAvailable "#kick") then {
+    [] execVM "pickBulwarkPos.sqf";
+};
+
 //Show the Bulwark label on screen
 onEachFrame {
     if(!isNil "bulwarkBox") then {
@@ -154,7 +158,7 @@ player removeAllEventHandlers 'HandleDamage';
 player addEventHandler ["HandleDamage", {
   _beingRevived = player getVariable "RevByMedikit";
   _players = allPlayers;
-  if (lifeState player == "INCAPACITATED" || _beingRevived || ((_this select 3) in _players && !TEAM_DAMAGE && !((_this select 3) isEqualTo player))) then {0} else {_this call bis_fnc_reviveEhHandleDamage;};
+  if ((_this select 4) == "" || lifeState player == "INCAPACITATED" || _beingRevived || ((_this select 3) in _players && !TEAM_DAMAGE && !((_this select 3) isEqualTo player))) then {0} else {_this call bis_fnc_reviveEhHandleDamage;};
 }];
 
 waitUntil {!isNil "bulwarkCity"};

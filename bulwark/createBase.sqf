@@ -30,13 +30,34 @@ _bulMon enableSimulation false;
 _bulMon attachTo [bulwarkBox, [0,0.1,0.6]];
 _bulMon setDir 180;
 
+// If host/admin picked a location, use it (set by pickBulwarkPos.sqf -> initServer wait block)
+_usePicked = (DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3});
+_pickedPos = [0,0,0];
+if (_usePicked) then { _pickedPos = DB_specBulwarkPos; };
+
 _isWater = true;
 while {_isWater} do {
-	_bulwarkLocation = [BULWARK_LOCATIONS, BULWARK_RADIUS] call bulwark_fnc_bulwarkLocation;
-	bulwarkRoomPos = _bulwarkLocation select 0;
-	bulwarkCity = _bulwarkLocation select 1;
-	bulwarkBox setPosASL bulwarkRoomPos;
-	_isWater = surfaceIsWater (getPos bulwarkBox);
+
+    if (_usePicked) then {
+        // Use picked position; set city center to same point for mission area + loot radius logic
+        bulwarkRoomPos = _pickedPos;
+        bulwarkCity = _pickedPos;
+    } else {
+        // Original behavior: pick a random/parameter-driven location
+        _bulwarkLocation = [BULWARK_LOCATIONS, BULWARK_RADIUS] call bulwark_fnc_bulwarkLocation;
+        bulwarkRoomPos = _bulwarkLocation select 0;
+        bulwarkCity = _bulwarkLocation select 1;
+    };
+
+    bulwarkBox setPosASL bulwarkRoomPos;
+    _isWater = surfaceIsWater (getPos bulwarkBox);
+
+    // If host chose water, fall back to random location and continue the loop
+	if (_usePicked && _isWater) then {
+		diag_log "[DynamicBulwarks] Picked bulwark position was on water. Falling back to random location.";
+		_usePicked = false;
+		_pickedPos = [0,0,0];
+	};
 };
 
 publicVariable "bulwarkCity";

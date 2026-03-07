@@ -7,6 +7,8 @@
 **/
 
 _randWeapons = "RANDOM_WEAPONS" call BIS_fnc_getParamValue;
+_lootFaction = "LOOT_FACTION" call BIS_fnc_getParamValue;
+_replaceWeapons = (_randWeapons == 1 || _lootFaction != 0);
 
 if (defectorWave) then { //determine if defect wave and spawn from List defined in EditMe.sqf
 	unitClasses = DEFECTOR_CLASS;
@@ -67,7 +69,7 @@ for ("_i") from 1 to _unitCount do {
 	_unit setVariable ["points", []];
 	_unit setVariable ["killPointMulti", _killPointMulti];
 
-	if (_randWeapons == 1) then {
+	if (_replaceWeapons) then {
 		_unitPrimaryWeap = primaryWeapon _unit;
 		_primaryAmmoTpyes = getArray (configFile >> "CfgWeapons" >> _unitPrimaryWeap >> "magazines");
 		{
@@ -87,9 +89,11 @@ for ("_i") from 1 to _unitCount do {
 
 	if(_attackWave <= PISTOL_HOSTILES) then {
 		removeAllWeapons _unit;
-		_unit addMagazine "16Rnd_9x21_Mag";
-		_unit addMagazine "16Rnd_9x21_Mag";
-		_unit addWeapon "hgun_P07_F";
+		private _pistolMag = if (!isNil "HOSTILE_PISTOL_MAG") then { HOSTILE_PISTOL_MAG } else { "16Rnd_9x21_Mag" };
+		private _pistol = if (!isNil "HOSTILE_PISTOL") then { HOSTILE_PISTOL } else { "hgun_P07_F" };
+		_unit addMagazine _pistolMag;
+		_unit addMagazine _pistolMag;
+		_unit addWeapon _pistol;
 		if ((floor random 4) == 1) then {
 			_unit additem "FirstAidKit";
 		};
@@ -100,80 +104,7 @@ for ("_i") from 1 to _unitCount do {
 		_unit addEventHandler ["Killed", CreateHostiles_fnc_suiExplode];
 	};
 
-	if (demineWave && (floor random 2 == 0) && droneCount <= 15) then {
-		droneCount = droneCount + 1;
-		_aicrew = creategroup EAST;
-		_drone = [_location, 50, "C_IDAP_UAV_06_antimine_F", _aicrew] call BIS_fnc_spawnVehicle;
-		droneSquad pushback _aicrew;
-		_wp1 = _aicrew addWaypoint [position bulwarkBox, 0];
-		_wp1 setWaypointType "SAD";
-		_leadah = leader _aicrew;
-		_leadah flyInHeight 30;
-		_leadah setSkill 1;
-		sleep 0.5;
-		mainZeus addCuratorEditableObjects [[_drone select 0], true];
-		_leadah addEventHandler ["Hit", killPoints_fnc_hit];
-		_leadah addEventHandler ["Killed", {
-			params ["_unit", "_killer", "_instigator", "_useEffects"];
-			call killPoints_fnc_killed;
-			_scriptedCharge = "HandGrenade" createVehicle (getPos _unit);
-			_scriptedCharge setdamage 1;
-			deleteVehicle _unit;
-		}];
-		_leadah setVariable ["killPointMulti", HOSTILE_CAR_POINT_SCORE];
-	};
 	mainZeus addCuratorEditableObjects [[_unit], true];
 	unitArray = waveUnits select 0;
 	unitArray append [_unit];
 };
-
-
-// ====== LAMBS TACTICAL BEHAVIOR SYSTEM ======
-// Applies randomized LAMBS Danger FSM task behaviors to spawned AI groups
-// Five behavior options: taskCreep, taskCQB, taskHunt, taskRush, or Vanilla (no LAMBS)
-// Requires LAMBS_Danger mod - gracefully falls back to vanilla if not present
-if (isClass(configFile >> "CfgPatches" >> "lambs_danger")) then {
-	private _groupsToProcess = [];
-	{
-		private _unitGrp = group _x;
-		if (! (_unitGrp in _groupsToProcess)) then {
-			_groupsToProcess pushBack _unitGrp;
-		};
-	} forEach (waveUnits select 0);
-	
-	{
-		if (count units _x > 0) then {
-			// Randomly select behavior (0-4): 0=Creep, 1=CQB, 2=Hunt, 3=Rush, 4=Vanilla
-			private _behaviorType = floor (random 5);
-			
-			switch (_behaviorType) do {
-				case 0: {
-					// taskCreep: Stealthy approach, holds fire until close (~40m)
-					// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers]
-					[_x, 600, 20, [], [], true] spawn lambs_wp_fnc_taskCreep;
-				};
-				case 1: {
-					// taskCQB: Building clearing operations
-					// Parameters: [group, targetPos, searchRadius, updateCycle, areaRestriction]
-					// Target bulwark position for CQB operations
-					[_x, getPos bulwarkCity, 150, 25, []] spawn lambs_wp_fnc_taskCQB;
-				};
-				case 2: {
-					// taskHunt: Deliberate tracking with optional flares
-					// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers, enableReinforcement, doUGL]
-					[_x, 500, 15, [], [], true, false, 1] spawn lambs_wp_fnc_taskHunt;
-				};
-				case 3: {
-					// taskRush: Aggressive rushing attack
-					// Parameters: [group, trackingRadius, updateCycle, areaRestriction, centerPos, onlyPlayers]
-					[_x, 500, 15, [], [], true] spawn lambs_wp_fnc_taskRush;
-				};
-				case 4: {
-					// Vanilla: No LAMBS behavior, uses default Arma AI
-					// Group will use standard movement and combat behavior
-				};
-			};
-		};
-	} forEach _groupsToProcess;
-};
-// ====== END LAMBS TACTICAL BEHAVIOR SYSTEM ======
