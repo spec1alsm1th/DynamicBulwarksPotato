@@ -267,7 +267,7 @@ class Params
 
 	class PLAYER_STARTMAP
 	{
-		title = "Start with map";
+		title = "Start with map and compass";
 		values[] = {0, 1};
 		texts[] = {"No", "Yes"};
 		default = 1;
@@ -441,20 +441,20 @@ class Params
 		default = 25;
 	};
 
-	class DAY_TIME_FROM
+	class TIME_OF_DAY
 	{
-		title = "Earliest time of day";
-		values[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22};
-		texts[] = {"2am","4am","6am","8am","10am","Midday", "2pm", "4pm", "6pm", "8pm", "10pm"};
-		default = 8;
+		title = "Time of day";
+		values[] = {7, 12, 15, 19, 2, -1};
+		texts[] = {"Morning (7 am)", "Day (12 pm)", "Afternoon (3 pm)", "Evening (7 pm)", "Night (2 am)", "Random"};
+		default = 12;
 	};
 
-	class DAY_TIME_TO
+	class WEATHER
 	{
-		title = "Latest time of day";
-		values[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22};
-		texts[] = {"2am","4am","6am","8am","10am","Midday", "2pm", "4pm", "6pm", "8pm", "10pm"};
-		default = 16;
+		title = "Weather";
+		values[] = {0, 1, 2, 3, 4, -1};
+		texts[] = {"Clear", "Overcast", "Rainy", "Foggy", "Storm", "Random"};
+		default = 0;
 	};
 
 	class POWERUP_LABEL_SPACE

@@ -78,10 +78,47 @@ publicVariable 'TEAM_DAMAGE';
 HITMARKERPARAM = ("HUD_POINT_HITMARKERS" call BIS_fnc_getParamValue);
 publicVariable 'HITMARKERPARAM';
 
-_dayTimeHours = DAY_TIME_TO - DAY_TIME_FROM;
-_randTime = floor random _dayTimeHours;
-_timeToSet = DAY_TIME_FROM + _randTime;
+// Time of day (TIME_OF_DAY param: 7=Morning, 12=Day, 15=Afternoon, 19=Evening, 2=Night, -1=Random)
+private _todParam = "TIME_OF_DAY" call BIS_fnc_getParamValue;
+private _timeToSet = if (_todParam == -1) then { 6 + floor random 16 } else { _todParam };
 setDate [2018, 7, 1, _timeToSet, 0];
+
+// Weather (WEATHER param: 0=Clear, 1=Overcast, 2=Rainy, 3=Foggy, 4=Storm, -1=Random)
+private _weatherParam = "WEATHER" call BIS_fnc_getParamValue;
+if (_weatherParam == -1) then { _weatherParam = floor random 5; };
+MISSION_WEATHER = _weatherParam;
+publicVariable "MISSION_WEATHER";
+
+switch (_weatherParam) do {
+	case 0: { // Clear
+		0 setOvercast 0;
+		0 setRain 0;
+		0 setFog 0;
+		0 setWind [0, 0, false];
+	};
+	case 1: { // Overcast
+		0 setOvercast 0.65;
+		0 setRain 0;
+		0 setFog 0;
+	};
+	case 2: { // Rainy
+		0 setOvercast 0.85;
+		0 setRain 0.4;
+		0 setFog 0.1;
+		0 setWind [3, 3, true];
+	};
+	case 3: { // Foggy
+		0 setOvercast 0.3;
+		0 setRain 0;
+		0 setFog 0.65;
+	};
+	case 4: { // Storm
+		0 setOvercast 1;
+		0 setRain 0.8;
+		0 setFog 0.15;
+		0 setWind [8, 8, true];
+	};
+};
 
 //[] execVM "revivePlayers.sqf";
 [bulwarkRoomPos] execVM "missionLoop.sqf";

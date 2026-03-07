@@ -100,9 +100,13 @@ BULWARK_SUPPORTITEMS = [
     [800,  "Recon UAV",             "reconUAV"],
     [1680, "Emergency Teleport",   "telePlode"],
     [1950, "Paratroopers",          "paraDrop"],
+    [2500, "Land Forces",         "landForces"],
+    [3500, "Artillery Barrage", "artilleryBarrage"],
     [3850, "Missile CAS",          "airStrike"],
     [4220, "Mine Cluster Shell",   "mineField"],
     [4690, "Rage Stimpack",         "ragePack"],
+    [5000, "Tank Support",       "tankSupport"],
+    [5500, "Bomb Strike",         "bombStrike"],
     [5930, "Mind Control Gas",    "mindConGas"],
     [6666, "ARMAKART TM",           "armaKart"],
     [7500, "Predator Drone",    "droneControl"]
@@ -142,14 +146,7 @@ BULWARK_BUILDITEMS = [
     [9500, "Modular Bunker",       "Land_Bunker_01_Small_F",          180, 3.5]
 ];
 
-/* Time of Day*/
-DAY_TIME_FROM = ("DAY_TIME_FROM" call BIS_fnc_getParamValue);
-DAY_TIME_TO = ("DAY_TIME_TO" call BIS_fnc_getParamValue);
-
-// Check for sneaky inverted configuration. FROM should always be before TO.
-if (DAY_TIME_FROM > DAY_TIME_TO) then {
-    DAY_TIME_FROM = DAY_TIME_TO - 2;
-};
+/* Time of Day and Weather — applied in initServer.sqf */
 
 /* Starter MediKits */
 BULWARK_MEDIKITS = ("BULWARK_MEDIKIT" call BIS_fnc_getParamValue);

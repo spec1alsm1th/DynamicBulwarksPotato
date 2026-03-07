@@ -96,3 +96,47 @@ class telePlode
     enable = "1";
     removeAfterExpressionCall = 1;
 };
+
+class landForces
+{
+    text = "Land Forces";
+    submenu = "";
+    expression = "[_this select 0, _this select 1, 'landForces'] remoteExec ['killPoints_fnc_support', 2];";
+    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\attack_ca.paa";
+    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
+    enable = "1";
+    removeAfterExpressionCall = 1;
+};
+
+class tankSupport
+{
+    text = "Tank Support";
+    submenu = "";
+    expression = "[_this select 0, _this select 1, 'tankSupport'] remoteExec ['killPoints_fnc_support', 2];";
+    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\defend_ca.paa";
+    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
+    enable = "1";
+    removeAfterExpressionCall = 1;
+};
+
+class artilleryBarrage
+{
+    text = "Artillery Barrage";
+    submenu = "";
+    expression = "[_this select 0, _this select 1, 'artilleryBarrage'] remoteExec ['killPoints_fnc_support', 2];";
+    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\Artillery_ca.paa";
+    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
+    enable = "1";
+    removeAfterExpressionCall = 1;
+};
+
+class bombStrike
+{
+    text = "Bomb Strike";
+    submenu = "";
+    expression = "[_this select 0, _this select 1, 'bombStrike'] remoteExec ['killPoints_fnc_support', 2];";
+    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa";
+    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
+    enable = "1";
+    removeAfterExpressionCall = 1;
+};

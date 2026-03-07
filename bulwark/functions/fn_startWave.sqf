@@ -42,7 +42,13 @@ if(!isNil "nightWave") then {
 	};
 };
 
-15 setFog 0;
+// Restore fog to mission weather level (fogWave will override this below if active)
+private _missionFog = switch (if (!isNil "MISSION_WEATHER") then { MISSION_WEATHER } else { 0 }) do {
+	case 3: { 0.65 }; // Foggy
+	case 4: { 0.15 }; // Storm
+	default { 0 };
+};
+15 setFog _missionFog;
 
 [] remoteExec ["killPoints_fnc_updateHud", 0];
 
@@ -300,4 +306,20 @@ if (attkWave > 1) then { //if first wave give player extra time before spawning 
 	[] call loot_fnc_cleanup;
 	_spawnLoot = execVM "loot\spawnLoot.sqf";
 	waitUntil { scriptDone _spawnLoot};
+};
+
+// Enemy special abilities (wave 10+): ~30% chance of airstrike and/or rocket barrage
+if (attkWave >= 10) then {
+	if (random 1 < 0.30) then {
+		[] spawn {
+			sleep (30 + random 60);
+			execVM "hostiles\enemyAirstrike.sqf";
+		};
+	};
+	if (random 1 < 0.30) then {
+		[] spawn {
+			sleep (20 + random 40);
+			execVM "hostiles\enemyRocketStrike.sqf";
+		};
+	};
 };

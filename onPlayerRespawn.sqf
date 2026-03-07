@@ -57,6 +57,9 @@ if(PLAYER_STARTMAP) then {
     _player addItem "ItemMap";
     _player assignItem "ItemMap";
     _player linkItem "ItemMap";
+    _player addItem "ItemCompass";
+    _player assignItem "ItemCompass";
+    _player linkItem "ItemCompass";
 };
 
 if(PLAYER_STARTNVG) then {

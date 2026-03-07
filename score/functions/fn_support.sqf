@@ -40,4 +40,16 @@ switch (_type) do {
     case ("telePlode"): {
     [_player] call supports_fnc_telePlode;
     };
+    case ("landForces"): {
+        [_player] call supports_fnc_landForces;
+    };
+    case ("tankSupport"): {
+        [_player] call supports_fnc_tankSupport;
+    };
+    case ("artilleryBarrage"): {
+        [_player, _target] call supports_fnc_artilleryBarrage;
+    };
+    case ("bombStrike"): {
+        [_player, _target] call supports_fnc_bombStrike;
+    };
 };

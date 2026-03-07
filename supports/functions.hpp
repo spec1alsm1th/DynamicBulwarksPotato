@@ -13,5 +13,9 @@ class supports
         class droneControl {};
         class mineField {};
         class telePlode{};
+        class landForces {};
+        class tankSupport {};
+        class artilleryBarrage {};
+        class bombStrike {};
     };
 };
