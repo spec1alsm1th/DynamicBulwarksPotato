@@ -37,7 +37,7 @@ if (count _targetPos == 0) then {
 	[_mortar, _mortarGroup] spawn {
 		params ["_m", "_g"];
 		sleep 90;
-		{ deleteVehicle _x } forEach (vehicles _g);
+		if (alive _m) then { deleteVehicle _m; };
 		{ deleteVehicle _x } forEach (units _g);
 	};
 };
