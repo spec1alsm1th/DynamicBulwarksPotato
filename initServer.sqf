@@ -120,7 +120,7 @@ switch (_weatherParam) do {
 	};
 };
 
-//[] execVM "revivePlayers.sqf";
+[] execVM "revivePlayers.sqf";
 [bulwarkRoomPos] execVM "missionLoop.sqf";
 
 [] execVM "area\areaEnforcement.sqf";

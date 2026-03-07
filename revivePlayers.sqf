@@ -4,7 +4,7 @@ while {true} do {
   {
     _playerInvToCheck = _x;
     if ((lifeState _x) == "INCAPACITATED") then {
-      _playerItems = items _x;
+      _playerItems = items _x + backpackItems _x;
       if ("Medikit" in _playerItems && !(_playerInvToCheck getVariable "RevByMedikit")) then {
         _playerInvToCheck setVariable ["RevByMedikit", true, true];
         [_playerInvToCheck, false] remoteExec ["setUnconscious", 0];
@@ -15,4 +15,5 @@ while {true} do {
       };
     };
   } forEach _allHPs;
+  sleep 1;
 };
