@@ -36,9 +36,9 @@ private _vipGroup = createGroup [WEST, true];
 private _vip = _vipGroup createUnit [_vipClass, _vipPos, [], 0, "NONE"];
 _vip disableAI "MOVE";
 _vip setCaptive true;
-_vip removeAllWeapons;
-_vip removeAllItems;
-_vip removeAllAssignedItems;
+removeAllWeapons _vip;
+removeAllItems _vip;
+removeAllAssignedItems _vip;
 _vip setUnitPos "DOWN";
 mainZeus addCuratorEditableObjects [[_vip], true];
 

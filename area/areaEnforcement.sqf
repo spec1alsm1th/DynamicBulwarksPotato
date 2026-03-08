@@ -14,7 +14,12 @@ while {true} do {
             // If player is trying to leave, bounce them back.
             case ((_x distance2D bulwarkCity) > BULWARK_RADIUS * 1.1): {
                 _dir = bulwarkCity dirTo _x;
-                _newLoc = bulwarkCity getPos [(BULWARK_RADIUS * 1.1)-8, _dir];
+                private _pushDist = (BULWARK_RADIUS * 1.1) - 8;
+                _newLoc = [
+                    (bulwarkCity select 0) + _pushDist * sin _dir,
+                    (bulwarkCity select 1) + _pushDist * cos _dir,
+                    0
+                ];
                 _x setPosASL _newLoc;
                 [_x, "teleportHit"] remoteExec ["sound_fnc_say3DGlobal", 0];
                 ["DynamicBlur", 200, [10]] remoteExec ["area_fnc_createBlur", _x];
