@@ -20,8 +20,8 @@ switch (_type) do {
     case ("paraTroop"): {
         [_player, _target, PARATROOP_COUNT, _aircraft, PARATROOP_CLASS] call supports_fnc_paraTroop;
     };
-    case ("reconUAV"): {
-        [_player, getPos _player, _aircraft] call supports_fnc_reconUAV;
+    case ("reconFlight"): {
+        [_player, _target] call supports_fnc_reconFlight;
     };
     case ("airStrike"): {
         [_player, _target, _aircraft] call supports_fnc_airStrike;

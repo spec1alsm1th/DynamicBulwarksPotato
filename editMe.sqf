@@ -98,7 +98,7 @@ HOSTILE_ARMOUR_POINT_SCORE = 4;
 /* Comment out or delete the below support items to prevent the player from buying them */
 
 BULWARK_SUPPORTITEMS = [
-    [800,  "Recon UAV",             "reconUAV"],
+    [800,  "Recon Flight",          "reconFlight"],
     [1680, "Emergency Teleport",   "telePlode"],
     [1950, "Paratroopers",          "paraDrop"],
     [2500, "Land Forces",         "landForces"],

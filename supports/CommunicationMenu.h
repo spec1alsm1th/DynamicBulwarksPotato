@@ -9,11 +9,11 @@ class paraDrop
     removeAfterExpressionCall = 1;
 };
 
-class reconUAV
+class reconFlight
 {
-    text = "Recon UAV";
+    text = "Recon Flight";
     submenu = "";
-    expression = "[_this select 0, _this select 1, 'reconUAV', 'B_UAV_01_F'] remoteExec ['killPoints_fnc_support', 2];";
+    expression = "[_this select 0, _this select 1, 'reconFlight'] remoteExec ['killPoints_fnc_support', 2];";
     icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\defend_ca.paa";
     cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
     enable = "1";
