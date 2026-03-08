@@ -13,7 +13,7 @@ while {true} do {
 
             // If player is trying to leave, bounce them back.
             case ((_x distance2D bulwarkCity) > BULWARK_RADIUS * 1.1): {
-                _dir = bulwarkCity dirTo _x;
+                private _dir = [bulwarkCity, getPos _x] call BIS_fnc_dirTo;
                 private _pushDist = (BULWARK_RADIUS * 1.1) - 8;
                 _newLoc = [
                     (bulwarkCity select 0) + _pushDist * sin _dir,

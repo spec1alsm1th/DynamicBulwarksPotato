@@ -1,8 +1,8 @@
 /**
 *  airborneWave
 *
-*  All enemy infantry arrives via transport helicopter passes and parachute drops.
-*  Ground infantry spawning is suppressed (see createWave.sqf).
+*  All enemy infantry arrives via transport helicopter. Helicopters fly to a
+*  landing zone near the bulwark, land, disembark troops, then fly away.
 *  Vehicles and armour still spawn normally via createWave.sqf.
 *
 *  Domain: Server
@@ -43,7 +43,7 @@ private _preferredTransports = switch (_factionParam) do {
 	case 4: { ["O_Heli_Light_02_F", "O_Heli_Transport_04_F"] };          // Contact (fallback)
 	case 5: { ["O_W_Heli_Light_01_F", "O_Heli_Light_02_F"] };            // Western Sahara
 	case 6: { ["gm_gc_airforce_mi2t"] };                                   // Global Mobilization
-	case 7: { ["vn_o_air_mi2_01_01", "vn_o_air_mi2_01_02", "vn_o_air_mi2_01_03"] };  // S.O.G. Prairie Fire (PAVN transport Mi-2, verified from OSAT)
+	case 7: { ["vn_o_air_mi2_01_01", "vn_o_air_mi2_01_02", "vn_o_air_mi2_01_03"] };  // S.O.G. Prairie Fire (PAVN transport Mi-2)
 	case 8: { ["CSLA_Mi8T", "CSLA_Mi8"] };                                // CSLA Iron Curtain
 	default { ["O_Heli_Light_02_F"] };
 };
@@ -72,136 +72,127 @@ if (count _validTransports == 0) then {
 
 diag_log format ["DynBulwarks: airborneWave — transports: %1, passes: %2, units/pass: %3", _validTransports, _heliPasses, _unitsPerPass];
 
-// Find a consistent drop center near the bulwark
-private _dropCenter = [bulwarkCity, 0, 50, 0, 0] call BIS_fnc_findSafePos;
-private _dropAlt = 260;
+// Approach and landing altitude
+private _approachAlt = 80;
 
 // Spawn helicopter passes staggered in time
 for "_h" from 1 to _heliPasses do {
 
+	// Find a clear landing zone near the bulwark
+	private _lzPos = [bulwarkCity, 20, 100, 5, 0, 0.3, 10] call BIS_fnc_findSafePos;
+	if (count _lzPos < 2) then { _lzPos = bulwarkCity; };
+
 	// Each heli approaches from a different random direction
 	private _entryPos = [bulwarkCity, BULWARK_RADIUS + 700, BULWARK_RADIUS + 1400, 0, 1] call BIS_fnc_findSafePos;
-	private _entryPosAir = [_entryPos select 0, _entryPos select 1, _dropAlt];
+	private _entryPosAir = [_entryPos select 0, _entryPos select 1, _approachAlt];
 
-	// Exit on the far side of the bulwark
-	private _exitDir = ([_dropCenter, _entryPos] call BIS_fnc_dirTo) + 180;
-	private _exitX = (_dropCenter select 0) + sin(_exitDir) * (BULWARK_RADIUS + 800);
-	private _exitY = (_dropCenter select 1) + cos(_exitDir) * (BULWARK_RADIUS + 800);
-	private _exitPosAir = [_exitX, _exitY, _dropAlt];
+	// Exit on the far side
+	private _exitDir = ([_lzPos, _entryPos] call BIS_fnc_dirTo) + 180;
+	private _exitX = (_lzPos select 0) + sin(_exitDir) * (BULWARK_RADIUS + 800);
+	private _exitY = (_lzPos select 1) + cos(_exitDir) * (BULWARK_RADIUS + 800);
+	private _exitPosAir = [_exitX, _exitY, _approachAlt];
 
-	private _dropPosAir = [_dropCenter select 0, _dropCenter select 1, _dropAlt];
+	// Spawn troops at LZ (they will be loaded into cargo immediately)
+	private _troopGroup = createGroup [EAST, true];
+	for "_p" from 1 to _unitsPerPass do {
+		private _unitClass = selectRandom _unitClasses;
+		private _spawnOffset = [(random 10) - 5, (random 10) - 5, 0];
+		private _unit = _troopGroup createUnit [_unitClass, _lzPos vectorAdd _spawnOffset, [], 2, "CAN_COLLIDE"];
 
+		private _skillAim = _skill * 0.75;
+		_unit setUnitAbility _skill;
+		_unit setSkill ["aimingAccuracy", _skillAim];
+		_unit setSkill ["aimingSpeed", _skillAim];
+		_unit setSkill ["aimingShake", _skill];
+		_unit setSkill ["spotTime", 0.05];
+
+		_unit addEventHandler ["Hit", killPoints_fnc_hit];
+		_unit addEventHandler ["Killed", killPoints_fnc_killed];
+		_unit setVariable ["killPointMulti", _killScore];
+
+		// Apply random weapon replacement if loot faction filtering is active
+		if (_replaceWeapons) then {
+			private _unitPrimary = primaryWeapon _unit;
+			private _primaryAmmoTypes = getArray (configFile >> "CfgWeapons" >> _unitPrimary >> "magazines");
+			{
+				if (_x in _primaryAmmoTypes) then { _unit removeMagazineGlobal _x; };
+			} forEach magazines _unit;
+			private _newWeapon = selectRandom List_Primaries;
+			private _newMag = selectRandom getArray (configFile >> "CfgWeapons" >> _newWeapon >> "magazines");
+			_unit addWeaponGlobal _newWeapon;
+			_unit addPrimaryWeaponItem _newMag;
+			_unit addMagazine _newMag;
+			_unit addMagazine _newMag;
+			_unit addMagazine _newMag;
+			_unit selectWeapon _newWeapon;
+		};
+
+		// PISTOL_HOSTILES early-wave restriction
+		if (attkWave <= PISTOL_HOSTILES) then {
+			removeAllWeapons _unit;
+			private _pistolMag = if (!isNil "HOSTILE_PISTOL_MAG") then { HOSTILE_PISTOL_MAG } else { "16Rnd_9x21_Mag" };
+			private _pistol = if (!isNil "HOSTILE_PISTOL") then { HOSTILE_PISTOL } else { "hgun_P07_F" };
+			_unit addMagazine _pistolMag;
+			_unit addMagazine _pistolMag;
+			_unit addWeapon _pistol;
+		};
+
+		// Random optic — same probability curve as ground infantry
+		if (attkWave > PISTOL_HOSTILES && primaryWeapon _unit != "") then {
+			private _opticChance = (attkWave / 40) min 0.75;
+			if (random 1 < _opticChance) then {
+				_unit addPrimaryWeaponItem selectRandom [
+					"optic_MRCO", "optic_LRPS", "optic_SOS", "optic_KHS_blk", "optic_Hamr", "optic_Arco"
+				];
+			};
+		};
+
+		mainZeus addCuratorEditableObjects [[_unit], true];
+		unitArray = waveUnits select 0;
+		unitArray append [_unit];
+	};
+
+	// Spawn heli
 	private _heliClass = selectRandom _validTransports;
 	private _heliGroup = createGroup [EAST, true];
 	private _heliResult = [_entryPosAir, 0, _heliClass, _heliGroup] call BIS_fnc_spawnVehicle;
 	private _heli = _heliResult select 0;
 
 	_heli setPos _entryPosAir;
-	_heli setDir ([_entryPos, _dropCenter] call BIS_fnc_dirTo);
-	(leader _heliGroup) flyInHeight _dropAlt;
+	_heli setDir ([_entryPos, _lzPos] call BIS_fnc_dirTo);
+	(leader _heliGroup) flyInHeight _approachAlt;
 	_heliGroup setCombatMode "GREEN";
 	_heliGroup setBehaviour "CARELESS";
 
-	// Waypoint over the bulwark — troops drop when it is reached
-	private _wp1 = _heliGroup addWaypoint [_dropPosAir, 0];
-	_wp1 setWaypointType "Move";
-	_wp1 setWaypointCompletionRadius 80;
+	// Load troops into cargo
+	{ _x moveInCargo _heli; } forEach (units _troopGroup);
 
-	// Fly out and despawn
+	// Waypoints: fly to LZ and unload, then exit
+	private _wp1 = _heliGroup addWaypoint [_lzPos, 0];
+	_wp1 setWaypointType "TR UNLOAD";
+	_wp1 setWaypointCompletionRadius 20;
+
 	private _wp2 = _heliGroup addWaypoint [_exitPosAir, 0];
 	_wp2 setWaypointType "Move";
 
 	mainZeus addCuratorEditableObjects [[_heli], true];
 
-	// When the heli reaches the drop zone, spawn paratroopers at its position
-	[_heliGroup, _heli, _unitClasses, _killScore, _skill, _unitsPerPass, _replaceWeapons, _dropCenter] spawn {
-		params ["_hg", "_helicopter", "_classes", "_score", "_skl", "_count", "_replWeap", "_dCenter"];
+	// Wait for unload to complete, then send troops into combat
+	[_troopGroup, _heli, _heliGroup] spawn {
+		params ["_tg", "_helicopter", "_hg"];
 
 		waitUntil {
-			sleep 2;
-			(currentWaypoint _hg >= 1) || !alive _helicopter
+			sleep 3;
+			(currentWaypoint _hg >= 2) || !alive _helicopter
 		};
 
-		if (!alive _helicopter) exitWith {};
+		_tg setCombatMode "RED";
+		_tg setBehaviour "COMBAT";
+		{
+			if (alive _x) then { _x doMove (getPos (selectRandom playableUnits)); };
+		} forEach (units _tg);
 
-		private _dropPos = getPos _helicopter;
-
-		private _paraGroup = createGroup [EAST, true];
-		for "_p" from 1 to _count do {
-			private _unitClass = selectRandom _classes;
-			private _spawnOffset = [(random 20) - 10, (random 20) - 10, -3];
-			private _unit = _paraGroup createUnit [_unitClass, _dropPos vectorAdd _spawnOffset, [], 2, "CAN_COLLIDE"];
-
-			removeBackpack _unit;
-			_unit addBackpack "B_Parachute";
-			removeAllAssignedItems _unit;
-
-			private _skillAim = _skl * 0.75;
-			_unit setUnitAbility _skl;
-			_unit setSkill ["aimingAccuracy", _skillAim];
-			_unit setSkill ["aimingSpeed", _skillAim];
-			_unit setSkill ["aimingShake", _skl];
-			_unit setSkill ["spotTime", 0.05];
-
-			_unit addEventHandler ["Hit", killPoints_fnc_hit];
-			_unit addEventHandler ["Killed", killPoints_fnc_killed];
-			_unit setVariable ["killPointMulti", _score];
-
-			// Apply random weapon replacement if loot faction filtering is active
-			if (_replWeap) then {
-				private _unitPrimary = primaryWeapon _unit;
-				private _primaryAmmoTypes = getArray (configFile >> "CfgWeapons" >> _unitPrimary >> "magazines");
-				{
-					if (_x in _primaryAmmoTypes) then { _unit removeMagazineGlobal _x; };
-				} forEach magazines _unit;
-				private _newWeapon = selectRandom List_Primaries;
-				private _newMag = selectRandom getArray (configFile >> "CfgWeapons" >> _newWeapon >> "magazines");
-				_unit addWeaponGlobal _newWeapon;
-				_unit addPrimaryWeaponItem _newMag;
-				_unit addMagazine _newMag;
-				_unit addMagazine _newMag;
-				_unit addMagazine _newMag;
-				_unit selectWeapon _newWeapon;
-			};
-
-			// PISTOL_HOSTILES early-wave restriction
-			if (attkWave <= PISTOL_HOSTILES) then {
-				removeAllWeapons _unit;
-				private _pistolMag = if (!isNil "HOSTILE_PISTOL_MAG") then { HOSTILE_PISTOL_MAG } else { "16Rnd_9x21_Mag" };
-				private _pistol = if (!isNil "HOSTILE_PISTOL") then { HOSTILE_PISTOL } else { "hgun_P07_F" };
-				_unit addMagazine _pistolMag;
-				_unit addMagazine _pistolMag;
-				_unit addWeapon _pistol;
-			};
-
-			// Random optic — same probability curve as ground infantry
-			if (attkWave > PISTOL_HOSTILES && primaryWeapon _unit != "") then {
-				private _opticChance = (attkWave / 40) min 0.75;
-				if (random 1 < _opticChance) then {
-					_unit addPrimaryWeaponItem selectRandom [
-						"optic_MRCO", "optic_LRPS", "optic_SOS", "optic_KHS_blk", "optic_Hamr", "optic_Arco"
-					];
-				};
-			};
-
-			mainZeus addCuratorEditableObjects [[_unit], true];
-			unitArray = waveUnits select 0;
-			unitArray append [_unit];
-
-			// After parachute opens and unit lands, engage
-			[_unit, _dCenter] spawn {
-				params ["_u", "_dc"];
-				sleep 10;
-				if (alive _u) then {
-					removeBackpack _u;
-					_u setCombatMode "RED";
-					_u setBehaviour "COMBAT";
-					_u doMove (getPos (selectRandom playableUnits));
-				};
-			};
-		};
-
-		// Give the heli time to fly away then clean up
+		// Clean up heli after it flies away
 		sleep 60;
 		if (alive _helicopter) then { deleteVehicle _helicopter; };
 	};

@@ -11,7 +11,7 @@ private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
 
 // Preferred EAST Mi-2 classnames per faction
 private _preferredHelis = switch (_factionParam) do {
-	case 7: { ["vn_o_air_mi2_armed", "vn_o_air_mi2"] };       // SOG PF: PAVN Mi-2
+	case 7: { ["vn_o_air_mi2_04_01", "vn_o_air_mi2_04_02", "vn_o_air_mi2_04_04"] }; // SOG PF: PAVN armed Mi-2
 	case 1: { ["CUP_O_Mi2_RU", "CUP_O_Mi24_RU"] };            // CUP Russian
 	case 2: { ["RHS_Mi2_vvs", "RHS_Mi24V_vvs"] };              // RHS AFRF
 	case 8: { ["CSLA_Mi2", "CSLA_Mi24D"] };                    // CSLA

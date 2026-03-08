@@ -38,8 +38,17 @@ if (_factionParam == 7) then {
 	private _result = [_spawnPos, 0, _h12Class, _h12Group] call BIS_fnc_spawnVehicle;
 	private _h12 = _result select 0;
 	private _gunner = gunner _h12;
+	if (isNull _gunner) then { _gunner = driver _h12; };
 
-	_gunner doArtilleryFire [_targetPos, "vn_h12_v_12_he_mag", 3];
+	// Detect loaded ammo; fall back to known classname
+	private _h12Ammo = "";
+	{ if ((_x select 1) > 0) exitWith { _h12Ammo = _x select 0; }; } forEach (magazinesTurret [_h12, [0]]);
+	if (_h12Ammo == "") then { _h12Ammo = "vn_h12_v_12_he_mag"; };
+
+	sleep 2;
+	if (!isNull _gunner) then {
+		_gunner doArtilleryFire [_targetPos, _h12Ammo, 3];
+	};
 
 	diag_log format ["DynBulwarks: enemyRocketStrike — H12: %1", _h12Class];
 	["SpecialWarning", ["INCOMING ROCKETS! Take cover!"]] remoteExec ["BIS_fnc_showNotification", 0];
@@ -77,6 +86,7 @@ if (_factionParam == 7) then {
 		_ammoType = "3Rnd_82mm_Mo_shells";
 	};
 
+	sleep 2;
 	_gunner doArtilleryFire [_targetPos, _ammoType, 3];
 
 	diag_log format ["DynBulwarks: enemyRocketStrike — mortar: %1, ammo: %2", _mortarClass, _ammoType];
