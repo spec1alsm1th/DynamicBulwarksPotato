@@ -43,12 +43,19 @@ private _gunner = gunner _mortar;
 private _ammoType = "";
 { if (_x != "") exitWith { _ammoType = _x; }; } forEach magazines _mortar;
 if (_ammoType == "") then {
-	_mortar addMagazineAmmoCargo ["3Rnd_82mm_Mo_shells", 6];
+	_mortar addMagazineAmmoCargo ["3Rnd_82mm_Mo_shells", 2];
 	_ammoType = "3Rnd_82mm_Mo_shells";
 };
 
-private _targetPos = position bulwarkBox;
-_gunner doArtilleryFire [_targetPos, _ammoType, 6];
+// Aim at the bulwark with a random ±35 m offset so rounds scatter
+private _cx = position bulwarkBox select 0;
+private _cy = position bulwarkBox select 1;
+private _targetPos = [
+	_cx + (random 70) - 35,
+	_cy + (random 70) - 35,
+	0
+];
+_gunner doArtilleryFire [_targetPos, _ammoType, 3];
 
 diag_log format ["DynBulwarks: enemyRocketStrike — mortar: %1, ammo: %2", _mortarClass, _ammoType];
 
