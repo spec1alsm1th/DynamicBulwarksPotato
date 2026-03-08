@@ -48,15 +48,17 @@ if (_attackWave >= 30) then {
 sleep 0.5;
 
 _location = [bulwarkCity, BULWARK_RADIUS + 30, BULWARK_RADIUS + 150,1,0] call BIS_fnc_findSafePos;
+
+// One group for the whole squad so LAMBS can apply squad-level tactics
+_attGroupBand = createGroup [EAST, true];
+
 for ("_i") from 1 to _unitCount do {
-	_attGroupBand = createGroup [EAST, true];
 	_unitClass = selectRandom unitClasses;
 	_unit = objNull;
 	_unit = _attGroupBand createUnit [_unitClass, _location, [], 0.5, "FORM"];
 	sleep 0.3;
 	waitUntil {!isNull _unit};
 
-	[_unit] join _attGroupBand;
 	_unit doMove (getPos (selectRandom playableUnits));
 	_unit setUnitAbility hosSkill; //todo https://community.bistudio.com/wiki/CfgAISkill
 	_unit setSkill ["aimingAccuracy", hosSkill];
@@ -117,4 +119,17 @@ for ("_i") from 1 to _unitCount do {
 	mainZeus addCuratorEditableObjects [[_unit], true];
 	unitArray = waveUnits select 0;
 	unitArray append [_unit];
+};
+
+// Apply LAMBS Danger FSM behaviour to the squad group (lambs_wp mod required)
+if (isClass (configFile >> "CfgPatches" >> "lambs_wp") && LAMBS_AI != 0) then {
+	private _roll = if (LAMBS_AI == -1) then { floor random 5 } else { LAMBS_AI };
+	// roll 0 = vanilla (no task applied), 1=CQB, 2=Creep, 3=Hunt, 4=Rush
+	switch (_roll) do {
+		case 1: { [_attGroupBand, bulwarkCity] spawn lambs_wp_fnc_taskCQB   };
+		case 2: { [_attGroupBand]             spawn lambs_wp_fnc_taskCreep  };
+		case 3: { [_attGroupBand]             spawn lambs_wp_fnc_taskHunt   };
+		case 4: { [_attGroupBand]             spawn lambs_wp_fnc_taskRush   };
+		// default / case 0: vanilla AI, no task
+	};
 };
