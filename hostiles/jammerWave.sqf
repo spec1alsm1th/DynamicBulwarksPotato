@@ -8,19 +8,11 @@
 *  Domain: Server
 **/
 
-private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
-private _guardClass = switch (_factionParam) do {
-	case 7: { selectRandom ["vn_o_nva_inf_rifleman_01", "vn_o_vc_inf_guerrilla_01"] };
-	case 1: { "CUP_O_RU_Soldier" };
-	case 2: { "rhs_msv_rifleman" };
-	case 6: { "gm_gc_army_rifleman" };
-	case 8: { "CSLA_Soldier_base" };
-	default { "O_Soldier_F" };
-};
-if !(isClass (configFile >> "CfgVehicles" >> _guardClass)) then { _guardClass = "O_Soldier_F"; };
+private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR } else { "O_Soldier_F" };
 
 // Find spawn position 100–250m from bulwark
-private _jammerPos = [bulwarkCity, 100, 250, 5, 0, 10, 0] call BIS_fnc_findSafePos;
+private _jammerPos = [bulwarkCity, 100, 250, 5, 0, 60, 0] call BIS_fnc_findSafePos;
+if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [150, 0, 0]; };
 
 // Jammer prop — use an ammo box (has a real damage model, satisfying to destroy)
 private _jammerObj = createVehicle ["Box_East_Ordnance_F", _jammerPos, [], 0, "NONE"];

@@ -9,10 +9,10 @@
 **/
 
 private _timerSeconds = "BOMB_TIMER" call BIS_fnc_getParamValue;
-private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
 
 // Bomb spawns inside the bulwark, away from the box itself so players can reach it
-private _bombPos = [bulwarkBox, 8, BULWARK_RADIUS * 0.5, 0, 0] call BIS_fnc_findSafePos;
+private _bombPos = [bulwarkBox, 8, BULWARK_RADIUS * 0.5, 0, 0, 60, 0] call BIS_fnc_findSafePos;
+if (count _bombPos < 2) then { _bombPos = getPos bulwarkBox; };
 _bombPos = _bombPos vectorAdd [0, 0, 0.05];
 
 // Visual prop — indestructible until we trigger it
@@ -23,20 +23,11 @@ _bombObj allowDamage false;
 private _guardCount = 6 + floor random 3;
 private _guardGroup = createGroup [EAST, true];
 private _guards = [];
+private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR } else { "O_Soldier_F" };
 
 for "_i" from 0 to (_guardCount - 1) do {
 	private _angle = (_i / _guardCount) * 360;
 	private _guardPos = [(_bombPos select 0) + 8 * sin _angle, (_bombPos select 1) + 8 * cos _angle, 0];
-
-	private _guardClass = switch (_factionParam) do {
-		case 7: { selectRandom ["vn_o_nva_inf_rifleman_01", "vn_o_vc_inf_guerrilla_01"] };
-		case 1: { "CUP_O_RU_Soldier" };
-		case 2: { "rhs_msv_rifleman" };
-		case 6: { "gm_gc_army_rifleman" };
-		case 8: { "CSLA_Soldier_base" };
-		default { "O_Soldier_F" };
-	};
-	if !(isClass (configFile >> "CfgVehicles" >> _guardClass)) then { _guardClass = "O_Soldier_F"; };
 
 	private _guard = _guardGroup createUnit [_guardClass, _guardPos, [], 0, "FORM"];
 	_guard setBehaviour "COMBAT";

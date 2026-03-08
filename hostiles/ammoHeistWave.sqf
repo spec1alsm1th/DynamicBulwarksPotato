@@ -9,16 +9,7 @@
 *  Domain: Server
 **/
 
-private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
-private _guardClass = switch (_factionParam) do {
-	case 7: { selectRandom ["vn_o_nva_inf_rifleman_01", "vn_o_vc_inf_guerrilla_01"] };
-	case 1: { "CUP_O_RU_Soldier" };
-	case 2: { "rhs_msv_rifleman" };
-	case 6: { "gm_gc_army_rifleman" };
-	case 8: { "CSLA_Soldier_base" };
-	default { "O_Soldier_F" };
-};
-if !(isClass (configFile >> "CfgVehicles" >> _guardClass)) then { _guardClass = "O_Soldier_F"; };
+private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR } else { "O_Soldier_F" };
 
 // Faction-appropriate truck
 private _truckClass = switch (_factionParam) do {
@@ -32,7 +23,8 @@ private _truckClass = switch (_factionParam) do {
 if !(isClass (configFile >> "CfgVehicles" >> _truckClass)) then { _truckClass = "O_Truck_02_transport_F"; };
 
 // Spawn position 200–400m from bulwark (flat ground for driving)
-private _truckPos = [bulwarkCity, 200, 400, 5, 0, 10, 0] call BIS_fnc_findSafePos;
+private _truckPos = [bulwarkCity, 200, 400, 5, 0, 60, 0] call BIS_fnc_findSafePos;
+if (count _truckPos < 2) then { _truckPos = bulwarkCity vectorAdd [250, 0, 0]; };
 private _truckX = _truckPos select 0;
 private _truckY = _truckPos select 1;
 
