@@ -110,6 +110,15 @@ if (specialWave && attkWave >= 10) then {
 	if ("BOMB_WAVE" call BIS_fnc_getParamValue == 1) then {
 		_wavePool pushBack "bombWave";
 	};
+	if ("JAMMER_WAVE" call BIS_fnc_getParamValue == 1) then {
+		_wavePool pushBack "jammerWave";
+	};
+	if ("VIP_WAVE" call BIS_fnc_getParamValue == 1) then {
+		_wavePool pushBack "vipWave";
+	};
+	if ("AMMO_HEIST_WAVE" call BIS_fnc_getParamValue == 1) then {
+		_wavePool pushBack "ammoHeistWave";
+	};
 	SpecialWaveType = selectRandom _wavePool;
 	wavesSinceSpecial = 0;
 //}else{
@@ -193,6 +202,28 @@ if (SpecialWaveType == "bombWave") then {
 	[] execVM "hostiles\bombWave.sqf";
 } else {
 	bombWave = false;
+};
+
+if (SpecialWaveType == "jammerWave") then {
+	jammerWave = true;
+	jammerActive = false;
+	[] execVM "hostiles\jammerWave.sqf";
+} else {
+	jammerWave = false;
+};
+
+if (SpecialWaveType == "vipWave") then {
+	vipWave = true;
+	[] execVM "hostiles\vipWave.sqf";
+} else {
+	vipWave = false;
+};
+
+if (SpecialWaveType == "ammoHeistWave") then {
+	ammoHeistWave = true;
+	[] execVM "hostiles\ammoHeistWave.sqf";
+} else {
+	ammoHeistWave = false;
 };
 
 //Notify start of wave and type of wave
@@ -279,6 +310,21 @@ if (airborneWave) then {
 if (bombWave) then {
 	["Alarm"] remoteExec ["playSound", 0];
 	// Full notification with timer is sent inside bombWave.sqf
+};
+
+if (jammerWave) then {
+	["SpecialWarning", ["SIGNAL JAMMER DETECTED! Destroy it to restore supports!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	["Alarm"] remoteExec ["playSound", 0];
+};
+
+if (vipWave) then {
+	["SpecialWarning", ["STRANDED OFFICER! Locate and extract the friendly VIP!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	["Alarm"] remoteExec ["playSound", 0];
+};
+
+if (ammoHeistWave) then {
+	["SpecialWarning", ["SUPPLY TRUCK SPOTTED! Capture it and drive it back to the Bulwark!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	["Alarm"] remoteExec ["playSound", 0];
 };
 
 if (!specialWave) then {

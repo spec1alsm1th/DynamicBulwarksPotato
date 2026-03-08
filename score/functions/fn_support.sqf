@@ -11,6 +11,11 @@ _target   = _this select 1;
 _type     = _this select 2;
 _aircraft = if (!isNil "SUPPORT_AIRCRAFT") then { SUPPORT_AIRCRAFT } else { _this select 3 };
 
+// Jammer wave: block all support calls until the jammer is destroyed
+if (!isNil "jammerActive" && { jammerActive }) exitWith {
+    ["JAMMER ACTIVE — destroy the enemy SIGINT jammer to restore supports!"] remoteExec ["hint", _player];
+};
+
 switch (_type) do {
     case ("paraTroop"): {
         [_player, _target, PARATROOP_COUNT, _aircraft, PARATROOP_CLASS] call supports_fnc_paraTroop;

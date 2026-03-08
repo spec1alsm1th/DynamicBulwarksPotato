@@ -345,6 +345,30 @@ class Params
 		default = 300;
 	};
 
+	class JAMMER_WAVE
+	{
+		title = "SIGINT Jammer - enemy jammer disables supports until destroyed (wave 10+)";
+		values[] = {0, 1};
+		texts[] = {"Disabled", "Enabled"};
+		default = 0;
+	};
+
+	class VIP_WAVE
+	{
+		title = "VIP Extraction - rescue a stranded friendly officer and escort them back (wave 10+)";
+		values[] = {0, 1};
+		texts[] = {"Disabled", "Enabled"};
+		default = 0;
+	};
+
+	class AMMO_HEIST_WAVE
+	{
+		title = "Ammunition Heist - steal an enemy supply truck and drive it to the Bulwark (wave 10+)";
+		values[] = {0, 1};
+		texts[] = {"Disabled", "Enabled"};
+		default = 0;
+	};
+
 	class ARMOUR_START_WAVE
 	{
 		title = "Vehicles can spawn after wave";
