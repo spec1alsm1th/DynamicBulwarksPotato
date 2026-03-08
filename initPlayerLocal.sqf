@@ -102,7 +102,7 @@ player createDiaryRecord ["DynamicBulwarks", ["Supports", "<br />Supports can be
 <br />
 <br />
 <br />
-<font color='#FFCC00'>Recon UAV</font> - Shows All hostiles on the map until shot down
+<font color='#FFCC00'>Recon Flight</font> - Observation aircraft flies over the target area and marks all enemy contacts for 25 seconds
 <br />
 <br />
 <font color='#FFCC00'>Paratroopers</font> - AI Reinforcements paradrop wherever you are looking or on a selected location on the map
