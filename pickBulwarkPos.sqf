@@ -9,8 +9,15 @@ if (!hasInterface) exitWith {};
 // Only allow server host / admin to pick
 if !(isServer || serverCommandAvailable "#kick") exitWith {};
 
+titleText [
+    "SELECT BULWARK LOCATION" + endl +
+    "Open the map and left-click to place the Bulwark." + endl +
+    "Choose a spot near buildings for cover and loot access.",
+    "PLAIN DOWN", 1
+];
+sleep 1;
 openMap true;
-hint "Click on the map to choose Bulwark location.";
+hint parseText "<t size='1.2' font='PuristaMedium'>SELECT BULWARK LOCATION</t><br/><t>Left-click anywhere on the map to place the Bulwark.<br/>• Pick a spot near buildings for loot and cover<br/>• Enemies will attack from all directions</t>";
 
 onMapSingleClick {
     params ["_units", "_pos", "_alt", "_shift"];
@@ -29,5 +36,5 @@ onMapSingleClick {
 
     onMapSingleClick "";   // remove handler
     openMap false;
-    hint format ["Bulwark location set: %1", _pos];
+    hint "Bulwark location confirmed. Setting up...";
 };

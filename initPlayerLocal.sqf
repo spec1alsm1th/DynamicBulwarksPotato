@@ -161,7 +161,11 @@ player addEventHandler ["HandleDamage", {
   if ((_this select 4) == "" || lifeState player == "INCAPACITATED" || _beingRevived || ((_this select 3) in _players && !TEAM_DAMAGE && !((_this select 3) isEqualTo player))) then {0} else {_this call bis_fnc_reviveEhHandleDamage;};
 }];
 
+if !(isServer || serverCommandAvailable "#kick") then {
+    hint "Waiting for the host to choose the Bulwark location on the map...";
+};
 waitUntil {!isNil "bulwarkCity" && !isNil "bulwarkBox"};
+hint "";
 
 // kill player if they disconnected and rejoined during a wave
 _buildPhase = bulwarkBox getVariable ["buildPhase", true];
