@@ -67,6 +67,9 @@ publicVariable "bulwarkCity";
 if(BULWARK_MEDIKITS > 0) then {
 	bulwarkBox addItemCargoGlobal ["Medikit", BULWARK_MEDIKITS];
 };
+if (ENGINEER_TOOLKIT) then {
+	bulwarkBox addItemCargoGlobal ["ToolKit", 1];
+};
 
 //Add actions to Bulwark Box
 [bulwarkBox, ["<t color='#00ffff'>" + "Pickup", "bulwark\moveBox.sqf","",1,false,false,"true","true",2.5]] remoteExec ["addAction", 0, true];
