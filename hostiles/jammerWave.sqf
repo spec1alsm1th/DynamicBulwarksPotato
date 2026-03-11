@@ -15,7 +15,7 @@ private _jammerPos = [bulwarkCity, 100, 250, 5, 0, 60, 0] call BIS_fnc_findSafeP
 if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [150, 0, 0]; };
 
 // Jammer prop — use an ammo box (has a real damage model, satisfying to destroy)
-private _jammerObj = createVehicle ["Box_NATO_AmmoVeh_F", _jammerPos, [], 0, "NONE"];
+private _jammerObj = createVehicle ["Land_SatelliteAntenna_01_F", _jammerPos, [], 0, "CAN_COLLIDE"];
 _jammerObj allowDamage true;
 mainZeus addCuratorEditableObjects [[_jammerObj], true];
 
