@@ -18,6 +18,11 @@ _VecRadius = (BULWARK_BUILDITEMS select _index) select 4;
 // Script was passed an invalid number
 if(_shopClass == "") exitWith {};
 
+// Jammer wave: block building purchases
+if (!isNil "jammerActive" && { jammerActive }) exitWith {
+    [format ["<t size='0.6' color='#ff3300'>JAMMER ACTIVE — build menu jammed!</t>", _shopName], -0, -0.02, 2, 0.1] call BIS_fnc_dynamicText;
+};
+
 if(player getVariable "killPoints" >= _shopPrice && !(player getVariable "buildItemHeld")) then {
     [player, _shopPrice] remoteExec ["killPoints_fnc_spend", 2];
     shopVehic = _shopClass createVehicle [0,0,0];

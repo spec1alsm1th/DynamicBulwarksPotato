@@ -140,7 +140,6 @@ BULWARK_BUILDITEMS = [
     [250,  "Tall Concrete Wall",   "Land_Mil_WallBig_4m_F",             0,   2],
     [260,  "Portable Light",       "Land_PortableLight_double_F",     180,   1],
     [300,  "Long Concrete Wall",   "Land_CncBarrierMedium4_F",          0,   3],
-    [400,  "Large Ramp",           "Land_VR_Slope_01_F",                0,   4],
     [500,  "Bunker Block",         "Land_Bunker_01_blocks_3_F",         0,   2],
     [500,  "H Barrier",            "Land_HBarrier_3_F",                 0,   2],
     [750,  "Ladder",               "Land_PierLadder_F",                 0,   1],
