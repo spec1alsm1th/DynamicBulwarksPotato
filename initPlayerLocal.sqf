@@ -174,3 +174,7 @@ waitUntil {alive player && !isnil "playersInWave" && !isnil "attkWave"};
 if (getPlayerUID player in playersInWave && attkWave > 0 && !_buildPhase) then {
     player setDamage 1;
 };
+
+if ("ENGINEER_TOOLKIT" call BIS_fnc_getParamValue == 1) then {
+    player addItem "ToolKit";
+};
