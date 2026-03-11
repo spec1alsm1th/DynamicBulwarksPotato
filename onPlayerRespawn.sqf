@@ -68,7 +68,7 @@ if(PLAYER_STARTNVG) then {
     _player linkItem "Integrated_NVG_F";
 };
 
-if ("ENGINEER_TOOLKIT" call BIS_fnc_getParamValue == 1) then {
+if (ENGINEER_TOOLKIT) then {
     _player addItem "ToolKit";
 };
 

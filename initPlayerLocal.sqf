@@ -175,6 +175,7 @@ if (getPlayerUID player in playersInWave && attkWave > 0 && !_buildPhase) then {
     player setDamage 1;
 };
 
-if ("ENGINEER_TOOLKIT" call BIS_fnc_getParamValue == 1) then {
+waitUntil { !isNil "ENGINEER_TOOLKIT" };
+if (ENGINEER_TOOLKIT) then {
     player addItem "ToolKit";
 };
