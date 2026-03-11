@@ -46,12 +46,13 @@ private _heli = _result select 0;
 
 _heli setPos _spawnPosAir;
 _heli setDir ([_spawnPos, getPos bulwarkBox] call BIS_fnc_dirTo);
-(leader _heliGroup) flyInHeight 100;
+_heli flyInHeight 80;
 _heliGroup setCombatMode "RED";
 _heliGroup setBehaviour "COMBAT";
 
 private _wp = _heliGroup addWaypoint [position bulwarkBox, 0];
 _wp setWaypointType "SAD";
+_wp setWaypointFlyInHeight 80;
 
 mainZeus addCuratorEditableObjects [[_heli], true];
 

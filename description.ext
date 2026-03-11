@@ -33,14 +33,14 @@ class Header
 
 class CfgFunctions
 {
-	#include "score\functions.hpp"
-	#include "supports\functions.hpp"
-	#include "bulwark\functions.hpp"
-	#include "sound\functions.hpp"
-	#include "area\functions.hpp"
-	#include "build\functions.hpp"
-	#include "hostiles\functions.hpp"
-	#include "loot\functions.hpp"
+	#include "score/functions.hpp"
+	#include "supports/functions.hpp"
+	#include "bulwark/functions.hpp"
+	#include "sound/functions.hpp"
+	#include "area/functions.hpp"
+	#include "build/functions.hpp"
+	#include "hostiles/functions.hpp"
+	#include "loot/functions.hpp"
 };
 
 
@@ -66,10 +66,10 @@ class CfgRemoteExec
 	};
 };
 
-#include "dialog\defines.hpp"
+#include "dialog/defines.hpp"
 class RscTitles
 {
-	#include "score\hud.hpp"
+	#include "score/hud.hpp"
 };
 
 class CfgDebriefing
@@ -96,7 +96,7 @@ class CfgDebriefing
 
 class CfgCommunicationMenu
 {
-	#include "supports\CommunicationMenu.h"
+	#include "supports/CommunicationMenu.h"
 };
 
 
@@ -180,7 +180,7 @@ class CfgNotifications
 	};
 };
 
-#include "bulwark\dialog.hpp"
+#include "bulwark/dialog.hpp"
 
 
 class Params
@@ -606,7 +606,7 @@ class Params
 
 	class TEAM_DAMAGE
 	{
-		title = "Freindly Fire";
+		title = "Friendly Fire";
 		values[] = {0, 1};
 		texts[] = {"Off", "On"};
 		default = 1;
