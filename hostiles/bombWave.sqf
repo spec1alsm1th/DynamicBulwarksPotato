@@ -16,7 +16,7 @@ if (count _bombPos < 2) then { _bombPos = getPos bulwarkBox; };
 _bombPos = _bombPos vectorAdd [0, 0, 0.05];
 
 // Visual prop — indestructible until we trigger it
-private _bombObj = createVehicle ["Box_East_Ordnance_F", _bombPos, [], 0, "NONE"];
+private _bombObj = createVehicle ["Box_NATO_AmmoVeh_F", _bombPos, [], 0, "NONE"];
 _bombObj allowDamage false;
 
 // Spawn guards around the bomb (6–8)
