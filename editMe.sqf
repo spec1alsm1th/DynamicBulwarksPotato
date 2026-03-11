@@ -117,6 +117,16 @@ BULWARK_SUPPORTITEMS = [
 
 /* Radius prevents hostiles walking through objects */
 
+// Faction-appropriate static HMG for the build menu
+private _hmgClass = switch ("HOSTILE_FACTION" call BIS_fnc_getParamValue) do {
+    case 7: { "vn_b_static_m2_01" };              // SOG PF — M2 Browning (Vietnam era)
+    case 6: { "gm_ge_army_static_mg3_high" };     // Global Mobilization — MG3
+    case 1: { "CUP_B_M2StaticMG_US" };            // CUP — M2 Browning
+    case 2: { "rhsusf_m2_tripod_gun_D" };         // RHS — M2 Browning
+    default { "B_HMG_01_high_F" };
+};
+if !(isClass (configFile >> "CfgVehicles" >> _hmgClass)) then { _hmgClass = "B_HMG_01_high_F"; };
+
 /*  Price - Display Name - Class Name - Rotation When Bought - Object Radius (meters) *prevents AI glitching through object and triggers suicide bombers*/
 BULWARK_BUILDITEMS = [
     [25,   "Long Plank (8m)",      "Land_Plank_01_8m_F",                0,   4],
@@ -140,7 +150,7 @@ BULWARK_BUILDITEMS = [
     [1000, "Double H Barrier",     "Land_HBarrierWall4_F",              0,   4],
     [1000, "Concrete Platform",    "BlockConcrete_F",                   0, 3.5],
     [1200, "Storage box large",    "Box_NATO_AmmoVeh_F",                0,   1],
-    [2500, "Static HMG",           "B_HMG_01_high_F",                   0,   1],
+    [2500, "Static HMG",           _hmgClass,                           0,   1],
     [3000, "Small Bunker",         "Land_BagBunker_Small_F",          180,   3],
     [4500, "Pillbox",              "Land_PillboxBunker_01_hex_F",      90, 2.5],
     [6000, "Guard Tower",          "Land_Cargo_Patrol_V3_F",            0, 3.5],

@@ -22,8 +22,15 @@ private _guardClass = switch (_factionParam) do {
 };
 if !(isClass (configFile >> "CfgVehicles" >> _guardClass)) then { _guardClass = "O_Soldier_F"; };
 
-// VIP class — WEST officer
-private _vipClass = "B_officer_F";
+// VIP class — faction-appropriate WEST officer
+private _vipClass = switch (_factionParam) do {
+	case 7: { "vn_b_men_sf_officer_01" };            // SOG PF — MACV-SOG officer
+	case 6: { "gm_ge_army_rifleman_officer" };        // Global Mobilization — West German officer
+	case 1: { "CUP_B_US_Soldier_Officer_Woodland" };  // CUP — US officer
+	case 2: { "rhsusf_army_rifleman_officer" };       // RHS — US Army officer
+	default { "B_officer_F" };
+};
+if !(isClass (configFile >> "CfgVehicles" >> _vipClass)) then { _vipClass = "B_officer_F"; };
 if !(isClass (configFile >> "CfgVehicles" >> _vipClass)) then { _vipClass = "B_Soldier_F"; };
 
 // Spawn position 150–350m from bulwark
