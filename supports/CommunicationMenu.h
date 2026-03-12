@@ -42,39 +42,6 @@ class ragePack
     removeAfterExpressionCall = 1;
 };
 
-class armaKart
-{
-    text = "ARMAKART TM";
-    submenu = "";
-    expression = "[_this select 0, _this select 1, 'armaKart'] remoteExec ['killPoints_fnc_support', 2];";
-    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa";
-    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
-    enable = "1";
-    removeAfterExpressionCall = 1;
-};
-
-class mindConGas
-{
-    text = "Mind Control Gas";
-    submenu = "";
-    expression = "[_this select 0, _this select 1, 'mindConGas'] remoteExec ['killPoints_fnc_support', 2];";
-    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\call_ca.paa";
-    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
-    enable = "1";
-    removeAfterExpressionCall = 1;
-};
-
-class droneControl
-{
-    text = "Predator Drone";
-    submenu = "";
-    expression = "[_this select 0, _this select 1, 'droneControl'] remoteExec ['killPoints_fnc_support', 2];";
-    icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa";
-    cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";
-    enable = "1";
-    removeAfterExpressionCall = 1;
-};
-
 class mineField
 {
     text = "Mine Field";

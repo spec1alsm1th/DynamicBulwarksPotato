@@ -68,7 +68,7 @@ if(PLAYER_STARTNVG) then {
     _player linkItem "Integrated_NVG_F";
 };
 
-if (ENGINEER_TOOLKIT) then {
+if (ENGINEER_TOOLKIT || roleDescription _player == "Engineer") then {
     _player addItem "ToolKit";
 };
 

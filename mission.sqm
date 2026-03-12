@@ -247,7 +247,7 @@ class Mission
 					flags=7;
 					class Attributes
 					{
-						description="Survivor";
+						description="Engineer";
 						isPlayable=1;
 						class Inventory
 						{
@@ -345,7 +345,7 @@ class Mission
 					flags=5;
 					class Attributes
 					{
-						description="Survivor";
+						description="Engineer";
 						isPlayable=1;
 					};
 					id=58;
@@ -431,7 +431,7 @@ class Mission
 					flags=5;
 					class Attributes
 					{
-						description="Survivor";
+						description="Engineer";
 						isPlayable=1;
 					};
 					id=62;

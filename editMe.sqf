@@ -109,9 +109,6 @@ BULWARK_SUPPORTITEMS = [
     [4690, "Rage Stimpack",         "ragePack"],
     [5000, "Tank Support",       "tankSupport"],
     [5500, "Bomb Strike",         "bombStrike"],
-    [5930, "Mind Control Gas",    "mindConGas"],
-    [6666, "ARMAKART TM",           "armaKart"],
-    [7500, "Predator Drone",    "droneControl"],
     [0,    "Skip Wave",         "skipWave"]
 ];
 
