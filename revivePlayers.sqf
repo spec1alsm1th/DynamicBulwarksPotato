@@ -18,6 +18,7 @@ while {true} do {
             _p switchMove "PlayerStand";
             _p removeItem "Medikit";
             [_p] remoteExec ["bulwark_fnc_revivePlayer", 2];
+            _p setVariable ["RevByMedikit", false, true];
           } else {
             // Bled out or teammate already revived — clear the flag
             _p setVariable ["RevByMedikit", false, true];
