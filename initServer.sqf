@@ -48,6 +48,8 @@ publicVariable "BULWARK_BUILDITEMS";
 publicVariable "PLAYER_STARTWEAPON";
 publicVariable "PLAYER_STARTMAP";
 publicVariable "PLAYER_STARTNVG";
+publicVariable "ENGINEER_TOOLKIT";
+publicVariable "BULWARK_RADIUS";
 publicVariable "PISTOL_HOSTILES";
 publicVariable "DOWN_TIME";
 publicVariable "RESPAWN_TICKETS";
