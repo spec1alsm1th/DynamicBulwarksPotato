@@ -57,4 +57,7 @@ switch (_type) do {
     case ("bombStrike"): {
         [_player, _target] call supports_fnc_bombStrike;
     };
+    case ("skipWave"): {
+        [_player] call supports_fnc_skipWave;
+    };
 };

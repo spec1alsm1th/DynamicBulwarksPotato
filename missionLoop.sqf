@@ -61,7 +61,7 @@ while {runMissionLoop} do {
 		//Check if all hostiles dead
 		if (EAST countSide allUnits == 0) exitWith {};
 
-		// Staleness failsafe: if EAST count hasn't changed for 90s, kill remaining units
+		// Staleness failsafe: if EAST count hasn't changed for 10 minutes, kill remaining units
 		// (handles units clipped underground or otherwise inaccessible to Zeus/players)
 		private _currentEastCount = EAST countSide allUnits;
 		if (_currentEastCount < _lastEastCount) then {
@@ -69,8 +69,8 @@ while {runMissionLoop} do {
 			_staleTimer = 0;
 		} else {
 			_staleTimer = _staleTimer + 1;
-			if (_staleTimer >= 90) then {
-				diag_log format ["DynBulwarks: Staleness failsafe triggered — %1 EAST unit(s) stuck for 90s, force-removing", _currentEastCount];
+			if (_staleTimer >= 600) then {
+				diag_log format ["DynBulwarks: Staleness failsafe triggered — %1 EAST unit(s) stuck for 10 minutes, force-removing", _currentEastCount];
 				{ if (side _x == east && alive _x) then { _x setDamage 1; }; } forEach allUnits;
 				_staleTimer = 0;
 			};
