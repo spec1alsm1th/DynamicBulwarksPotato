@@ -108,5 +108,14 @@ for "_i" from 1 to 4 do {
         unitArray append [_crewUnit];
     } forEach _heliCrew;
 
+    // Auto-despawn after 3 minutes — kill crew first so deleteVehicle doesn't
+    // eject them alive as orphaned EAST units that block wave end
+    [_heli, _heliGroup] spawn {
+        params ["_h", "_g"];
+        sleep 180;
+        { if (alive _x) then { _x setDamage 1; }; } forEach (units _g);
+        if (alive _h) then { deleteVehicle _h; };
+    };
+
     sleep 1;
 };

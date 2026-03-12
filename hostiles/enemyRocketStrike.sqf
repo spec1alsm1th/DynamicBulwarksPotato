@@ -56,8 +56,9 @@ if (_factionParam == 7) then {
 	[_h12, _h12Group] spawn {
 		params ["_v", "_g"];
 		sleep 90;
+		// Kill crew first so deleteVehicle doesn't eject them alive as orphaned EAST units
+		{ if (alive _x) then { _x setDamage 1; }; } forEach (units _g);
 		if (alive _v) then { deleteVehicle _v; };
-		{ deleteVehicle _x } forEach (units _g);
 	};
 
 } else {
@@ -95,8 +96,9 @@ if (_factionParam == 7) then {
 	[_mortar, _mortarGroup] spawn {
 		params ["_m", "_g"];
 		sleep 90;
+		// Kill crew first so deleteVehicle doesn't eject them alive as orphaned EAST units
+		{ if (alive _x) then { _x setDamage 1; }; } forEach (units _g);
 		if (alive _m) then { deleteVehicle _m; };
-		{ deleteVehicle _x } forEach (units _g);
 	};
 
 };

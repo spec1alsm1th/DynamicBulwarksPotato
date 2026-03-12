@@ -186,14 +186,21 @@ for "_h" from 1 to _heliPasses do {
 			(currentWaypoint _hg >= 2) || !alive _helicopter
 		};
 
+		// If heli was shot down, kill any surviving crew immediately
+		if (!alive _helicopter) then {
+			{ if (alive _x) then { _x setDamage 1; }; } forEach crew _helicopter;
+		};
+
 		_tg setCombatMode "RED";
 		_tg setBehaviour "COMBAT";
 		{
 			if (alive _x) then { _x doMove (getPos (selectRandom playableUnits)); };
 		} forEach (units _tg);
 
-		// Clean up heli after it flies away
+		// Clean up heli after it flies away — kill crew first so deleteVehicle
+		// doesn't eject them alive, leaving orphaned EAST units that block wave end
 		sleep 60;
+		{ if (alive _x) then { _x setDamage 1; }; } forEach crew _helicopter;
 		if (alive _helicopter) then { deleteVehicle _helicopter; };
 	};
 

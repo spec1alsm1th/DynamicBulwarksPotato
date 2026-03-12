@@ -46,7 +46,13 @@ while {runMissionLoop} do {
 
 	[] call bulwark_fnc_startWave;
 
+	// Staleness failsafe: track last EAST count and time to detect units stuck underground
+	private _lastEastCount = EAST countSide allUnits;
+	private _staleTimer = 0;
+
 	while {runMissionLoop} do {
+
+		sleep 1;
 
 		// Get all human players in this wave cycle // moved to contain players that respawned in this wave
 		_allHCs = entities "HeadlessClient_F";
@@ -54,6 +60,21 @@ while {runMissionLoop} do {
 
 		//Check if all hostiles dead
 		if (EAST countSide allUnits == 0) exitWith {};
+
+		// Staleness failsafe: if EAST count hasn't changed for 90s, kill remaining units
+		// (handles units clipped underground or otherwise inaccessible to Zeus/players)
+		private _currentEastCount = EAST countSide allUnits;
+		if (_currentEastCount < _lastEastCount) then {
+			_lastEastCount = _currentEastCount;
+			_staleTimer = 0;
+		} else {
+			_staleTimer = _staleTimer + 1;
+			if (_staleTimer >= 90) then {
+				diag_log format ["DynBulwarks: Staleness failsafe triggered — %1 EAST unit(s) stuck for 90s, force-removing", _currentEastCount];
+				{ if (side _x == east && alive _x) then { _x setDamage 1; }; } forEach allUnits;
+				_staleTimer = 0;
+			};
+		};
 
 		//check if all players dead or unconscious
 		_deadUnconscious = [];
