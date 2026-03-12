@@ -1,7 +1,7 @@
 {
 	[_x, false] remoteExec ["setUnconscious", 0];
-	_X action ["CancelAction", _X];
-	_X switchMove "PlayerStand";
+	_x action ["CancelAction", _x];
+	_x switchMove "PlayerStand";
 	[ "#rev", 1, _x ] remoteExecCall ["BIS_fnc_reviveOnState", _x];
 	_x setDamage 0;
 }forEach allPlayers;
@@ -11,8 +11,8 @@ _specialWaves = ("SPECIAL_WAVES" call BIS_fnc_getParamValue);
 _maxWaves = ("MAX_WAVES" call BIS_fnc_getParamValue);
 
 _CenterPos = _this;
-attkWave = 0;
-publicVariable "attkWave";
+// Preserve attkWave on manual restart from Zeus console — only reset on a fresh mission start
+if (isNil "attkWave" || attkWave < 0) then { attkWave = 0; publicVariable "attkWave"; };
 suicideWave = false;
 
 waveUnits = [[],[],[]];

@@ -10,6 +10,7 @@
 **/
 
 private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR } else { "O_Soldier_F" };
+private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
 
 // Faction-appropriate truck
 private _truckClass = switch (_factionParam) do {

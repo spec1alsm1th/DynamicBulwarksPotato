@@ -10,9 +10,9 @@
 
 private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR } else { "O_Soldier_F" };
 
-// Find spawn position 100–250m from bulwark
-private _jammerPos = [bulwarkCity, 100, 250, 5, 0, 60, 0] call BIS_fnc_findSafePos;
-if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [150, 0, 0]; };
+// Find spawn position inside the bulwark zone (15m–80% of BULWARK_RADIUS from centre)
+private _jammerPos = [bulwarkCity, 15, (BULWARK_RADIUS * 0.8) max 40, 5, 0, 0, 0] call BIS_fnc_findSafePos;
+if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [30, 0, 0]; };
 
 // Jammer prop — use an ammo box (has a real damage model, satisfying to destroy)
 private _jammerObj = createVehicle ["Land_SatelliteAntenna_01_F", _jammerPos, [], 0, "CAN_COLLIDE"];

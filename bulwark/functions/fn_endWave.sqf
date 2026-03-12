@@ -34,6 +34,12 @@ publicVariable "RESPAWN_TIME";
 // Try to force the spectator mode off when players are revived.
 ["Terminate"] remoteExec ["BIS_fnc_EGSpectator", 0];
 
+// Kill any surviving wave units — handles defector wave (WEST-classname units in EAST groups
+// may not register as EAST side, so missionLoop exits while they are still alive)
+{
+	if (alive _x) then { _x setDamage 1; };
+} forEach (waveUnits select 0);
+
 //Kill all mind controlled AI
 {
 	 _x setDamage 1;

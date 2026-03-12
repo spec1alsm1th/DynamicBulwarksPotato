@@ -51,4 +51,7 @@ switch (_type) do {
     case ("skipWave"): {
         [_player] call supports_fnc_skipWave;
     };
+    case ("restartLoop"): {
+        [_player] call supports_fnc_restartLoop;
+    };
 };

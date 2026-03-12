@@ -76,6 +76,6 @@ if (isClass (configfile >> "CfgVehicles" >> "tf_anarc164")) then {
   _player addItem "tf_anprc152";
 };
 
-waituntil {alive _player};
+waitUntil {alive _player};
 
 [] remoteExec ["killPoints_fnc_updateHud", 0];

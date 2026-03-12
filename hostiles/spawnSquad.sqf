@@ -33,9 +33,6 @@ if (_attackWave < 20 && _attackWave >= 15) then {
 	hosSkill = 0.15;
 };
 if (_attackWave < 25 && _attackWave >= 20) then {
-	hosSkill = 0.2;
-};
-if (_attackWave < 25 && _attackWave >= 20) then {
 	hosSkill = 0.4;
 };
 if (_attackWave < 30 && _attackWave >= 25) then {
