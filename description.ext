@@ -198,7 +198,7 @@ class Params
 		title = "Enemy Faction (requires DLC/mod)";
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 		texts[] = {"Vanilla (CSAT/AAF/Viper)", "CUP (Takistani/Russian/ChDKZ)", "RHS (MSV/VDV/AFRF)", "Apex (CSAT Pacific/Viper)", "Contact (LDF)", "Western Sahara (Tura/Sefrawi/ION)", "Global Mobilization (East German)", "S.O.G. Prairie Fire (PAVN/VC)", "CSLA Iron Curtain (CSLA)"};
-		default = 0;
+		default = 7;
 	};
 
 	class LOOT_FACTION
@@ -206,7 +206,7 @@ class Params
 		title = "Weapon, Gear & Vehicle Faction (requires DLC/mod)";
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7};
 		texts[] = {"All loaded content", "Vanilla + official DLC only", "CUP", "RHS", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Match enemy faction"};
-		default = 0;
+		default = 7;
 	};
 
 	class HOSTILE_MULTIPLIER
@@ -294,7 +294,7 @@ class Params
 		title = "ToolKits in Bulwark (allows mine defusal and vehicle repair)";
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 		texts[] = {"None", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"};
-		default = 0;
+		default = 2;
 	};
 
 	class SPECIAL_WAVES
@@ -310,7 +310,7 @@ class Params
 		title = "Hostage Rescue - one player taken hostage, others must rescue";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 0;
+		default = 1;
 	};
 
 	class HOSTAGE_TIMER
@@ -326,7 +326,7 @@ class Params
 		title = "Airborne Assault - enemy forces arrive by helicopter and parachute instead of on foot";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 0;
+		default = 1;
 	};
 
 	class BOMB_WAVE
@@ -334,7 +334,7 @@ class Params
 		title = "Bomb Defusal - a bomb is planted in the Bulwark, defuse it with a ToolKit";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 0;
+		default = 1;
 	};
 
 	class BOMB_TIMER
@@ -350,7 +350,7 @@ class Params
 		title = "SIGINT Jammer - enemy jammer disables supports until destroyed (wave 10+)";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 0;
+		default = 1;
 	};
 
 	class VIP_WAVE
@@ -358,7 +358,7 @@ class Params
 		title = "VIP Extraction - rescue a stranded friendly officer and escort them back (wave 10+)";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 0;
+		default = 1;
 	};
 
 	class AMMO_HEIST_WAVE
@@ -366,7 +366,7 @@ class Params
 		title = "Ammunition Heist - steal an enemy supply truck and drive it to the Bulwark (wave 10+)";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 0;
+		default = 1;
 	};
 
 	class ARMOUR_START_WAVE
@@ -382,7 +382,7 @@ class Params
 		title = "Randomize Hostile Weapons";
 		values[] = {"true", "false"};
 		texts[] = {"Yes", "No"};
-		default = "No";
+		default = "true";
 	};
 
 	class LAMBS_AI
