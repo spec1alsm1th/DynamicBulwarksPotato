@@ -390,7 +390,7 @@ class Params
 		title = "LAMBS AI Behaviour (requires LAMBS Danger FSM + CBA_A3)";
 		values[] = {0, -1, 1, 2, 3, 4};
 		texts[] = {"Off (Vanilla AI)", "Random (20% each incl. vanilla)", "CQB (building clearing)", "Creep (stealth)", "Hunt (methodical)", "Rush (aggressive)"};
-		default = 0;
+		default = -1;
 	};
 
 	class HUD_POINT_HITMARKERS
