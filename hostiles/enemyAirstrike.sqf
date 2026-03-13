@@ -62,6 +62,7 @@ mainZeus addCuratorEditableObjects [[_heli], true];
 [_heli, _heliGroup] spawn {
 	params ["_h", "_g"];
 	sleep 120;
+	// Kill crew first so deleteVehicle doesn't eject them alive as orphaned EAST units
+	{ if (alive _x) then { _x setDamage 1; }; } forEach (units _g);
 	if (alive _h) then { deleteVehicle _h; };
-	{ if (alive _x) then { deleteVehicle _x; }; } forEach units _g;
 };

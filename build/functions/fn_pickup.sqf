@@ -20,7 +20,7 @@ if (_closestPlayerDist > 5) then {
 		if (isNil "_pos") then {
 			[_object, _caller] call BIS_fnc_attachToRelative ;
 		} else {
-			_object attachTo [_caller, _pos, "Pelvis"];
+			_object attachTo [_caller, _pos];
 			_playerDir = _caller getRelDir _object;
 			_dir = _this select 3;
 			_holdDir = _playerDir + _dir;

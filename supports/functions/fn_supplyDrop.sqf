@@ -15,7 +15,7 @@ _pointX = _offsX*(cos _angle) - _offsY*(sin _angle);
 _pointY = _offsX*(sin _angle) + _offsY*(cos _angle);
 
 _dropStart  = _targetPos vectorAdd [_pointX, _pointY, _height];
-_dropTarget = [(_targetPos select 0), (_targetPos select 1), 100];
+_dropTarget = [(_targetPos select 0), (_targetPos select 1), 50];
 _dropEnd    = _targetPos vectorAdd [-_pointX*2, -_pointY*2, _height];;
 
 _agSpawn = [_dropStart, 0, _aircraft, WEST] call bis_fnc_spawnvehicle;
@@ -24,7 +24,7 @@ _agCrew = _agSpawn select 1;	//the units that make up the crew
 _ag = _agSpawn select 2;	//the group
 {_x allowFleeing 0} forEach units _ag;
 
-_agVehicle flyInHeight 100;
+_agVehicle flyInHeight 50;
 _agVehicle setpos [getposATL _agVehicle select 0, getposATL _agVehicle select 1, _height];
 
 _reldir = [_dropStart, _targetPos] call BIS_fnc_dirTo;

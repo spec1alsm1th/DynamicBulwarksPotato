@@ -41,11 +41,18 @@ for "_i" from 0 to (_guardCount - 1) do {
 jammerActive = true;
 publicVariable "jammerActive";
 
-// Map marker
-createMarker ["jammerMarker", _jammerPos];
-"jammerMarker" setMarkerType "mil_triangle";
+// Map marker — shows a search area; jammer is inside the ellipse (exact position not revealed)
+private _markerCenter = [
+	(_jammerPos select 0) + ((random 80) - 40),
+	(_jammerPos select 1) + ((random 80) - 40),
+	0
+];
+createMarker ["jammerMarker", _markerCenter];
+"jammerMarker" setMarkerShape "ELLIPSE";
 "jammerMarker" setMarkerColor "ColorRed";
-"jammerMarker" setMarkerText "JAMMER";
+"jammerMarker" setMarkerBrush "FDiagonal";
+"jammerMarker" setMarkerSize [120, 120];
+"jammerMarker" setMarkerText "JAMMER AREA";
 
 // Monitoring
 [_jammerObj, _initialGuards, _guardClass] spawn {

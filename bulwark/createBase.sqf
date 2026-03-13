@@ -67,8 +67,8 @@ publicVariable "bulwarkCity";
 if(BULWARK_MEDIKITS > 0) then {
 	bulwarkBox addItemCargoGlobal ["Medikit", BULWARK_MEDIKITS];
 };
-if (ENGINEER_TOOLKIT) then {
-	bulwarkBox addItemCargoGlobal ["ToolKit", 1];
+if (ENGINEER_TOOLKIT > 0) then {
+	bulwarkBox addItemCargoGlobal ["ToolKit", ENGINEER_TOOLKIT];
 };
 
 //Add actions to Bulwark Box

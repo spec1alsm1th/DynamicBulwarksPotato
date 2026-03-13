@@ -176,6 +176,3 @@ if (getPlayerUID player in playersInWave && attkWave > 0 && !_buildPhase) then {
 };
 
 waitUntil { !isNil "ENGINEER_TOOLKIT" };
-if (ENGINEER_TOOLKIT) then {
-    player addItem "ToolKit";
-};

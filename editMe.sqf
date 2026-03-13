@@ -35,7 +35,7 @@ LOOT_HOUSE_DENSITY = ("LOOT_HOUSE_DENSITY" call BIS_fnc_getParamValue);
 PLAYER_STARTWEAPON  = if ("PLAYER_STARTWEAPON"  call BIS_fnc_getParamValue == 1) then {true} else {false};
 PLAYER_STARTMAP     = if ("PLAYER_STARTMAP"     call BIS_fnc_getParamValue == 1) then {true} else {false};
 PLAYER_STARTNVG     = if ("PLAYER_STARTNVG"     call BIS_fnc_getParamValue == 1) then {true} else {false};
-ENGINEER_TOOLKIT    = if ("ENGINEER_TOOLKIT"    call BIS_fnc_getParamValue == 1) then {true} else {false};
+ENGINEER_TOOLKIT    = ("ENGINEER_TOOLKIT" call BIS_fnc_getParamValue);
 
 /* Respawn */
 RESPAWN_TIME = ("RESPAWN_TIME" call BIS_fnc_getParamValue);
