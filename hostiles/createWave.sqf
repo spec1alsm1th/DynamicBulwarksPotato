@@ -62,7 +62,7 @@ if ((attkWave >= _armourStartWave && (floor random ArmourChance) == 1) || (attkW
 	};
 };
 
-if ((attkWave >= _armourStartWave && (floor random carChance) == 1) || (attkWave >= _armourStartWave && wavesSinceArmour >= carMaxSince)) then {
+if ((attkWave >= _armourStartWave && (floor random carChance) == 1) || (attkWave >= _armourStartWave && wavesSinceCar >= carMaxSince)) then {
 	_spwnVec = execVM "hostiles\spawnCar.sqf";
 	waitUntil {scriptDone _spwnVec};
 	wavesSinceCar = 0;
@@ -77,8 +77,10 @@ _multiplierBase = HOSTILE_MULTIPLIER;
 _SoldierMulti = attkWave / 5;
 
 if (attkWave <= 2) then {
-	_multiplierBase = 1
+	_multiplierBase = _multiplierBase max 1;
 };
+
+diag_log format ["DynBulwarks: createWave — attkWave=%1, multiplierBase=%2, squadCount=%3, airborneWave=%4, noOfPlayers=%5", attkWave, _multiplierBase, floor (attkWave * _multiplierBase), airborneWave, _noOfPlayers];
 
 // Ground infantry is suppressed during airborne wave — troops arrive via airborneWave.sqf instead
 if (!airborneWave) then {

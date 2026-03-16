@@ -12,10 +12,10 @@
 HOSTILE_LEVEL_1 = List_Bandits;  // Wave 0 >
 HOSTILE_LEVEL_2 = List_OPFOR;    // Wave 5 >
 HOSTILE_LEVEL_3 = List_Viper;    // Wave 10 >
-HOSTILE_ARMED_CARS = List_Armour;//expects vehicles
-HOSTILE_ARMOUR = List_ArmedCars; //expects vehicles
+HOSTILE_ARMED_CARS = List_ArmedCars; //expects vehicles
+HOSTILE_ARMOUR = List_Armour;        //expects vehicles
 
-HOSTILE_MULTIPLIER = ("HOSTILE_MULTIPLIER" call BIS_fnc_getParamValue);  // How many hostiles per wave (waveCount x HOSTILE_MULTIPLIER)
+HOSTILE_MULTIPLIER = ("HOSTILE_MULTIPLIER" call BIS_fnc_getParamValue) / 100;  // How many hostiles per wave (waveCount x HOSTILE_MULTIPLIER)
 HOSTILE_TEAM_MULTIPLIER = ("HOSTILE_TEAM_MULTIPLIER" call BIS_fnc_getParamValue) / 100;   // How many extra units are added per player
 PISTOL_HOSTILES = ("PISTOL_HOSTILES" call BIS_fnc_getParamValue);  //What wave enemies stop only using pistols
 LAMBS_AI = ("LAMBS_AI" call BIS_fnc_getParamValue);  // LAMBS AI task: 0=Off, -1=Random, 1=CQB, 2=Creep, 3=Hunt, 4=Rush

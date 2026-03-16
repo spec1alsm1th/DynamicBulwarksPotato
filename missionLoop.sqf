@@ -112,7 +112,7 @@ while {runMissionLoop} do {
 
 	if(missionFailure) exitWith {};
 
-	if (attkWave == _maxWaves) exitWith {
+	if (_maxWaves > 0 && {attkWave >= _maxWaves}) exitWith {
 		"End2" call BIS_fnc_endMissionServer;
 	};
 

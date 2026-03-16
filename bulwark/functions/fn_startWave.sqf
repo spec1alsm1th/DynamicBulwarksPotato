@@ -32,6 +32,7 @@ publicVariable "playersInWave";
 
 attkWave = (attkWave + 1);
 publicVariable "attkWave";
+diag_log format ["DynBulwarks: Wave %1 starting (HOSTILE_MULTIPLIER=%2)", attkWave, HOSTILE_MULTIPLIER];
 
 waveSpawned = false;
 

@@ -46,6 +46,8 @@ sleep 0.5;
 
 _location = [bulwarkCity, BULWARK_RADIUS + 30, BULWARK_RADIUS + 150,1,0] call BIS_fnc_findSafePos;
 
+diag_log format ["DynBulwarks: spawnSquad — unitClasses count=%1, unitCount=%2, location=%3, bulwarkCity=%4", count unitClasses, _unitCount, _location, bulwarkCity];
+
 // One group for the whole squad so LAMBS can apply squad-level tactics
 _attGroupBand = createGroup [EAST, true];
 
@@ -54,7 +56,12 @@ for ("_i") from 1 to _unitCount do {
 	_unit = objNull;
 	_unit = _attGroupBand createUnit [_unitClass, _location, [], 0.5, "FORM"];
 	sleep 0.3;
-	waitUntil {!isNull _unit};
+	private _waitCount = 0;
+	waitUntil {_waitCount = _waitCount + 1; !isNull _unit || _waitCount > 100};
+
+	if (isNull _unit) exitWith {
+		diag_log format ["DynBulwarks: WARN — createUnit failed for class '%1' at %2, aborting squad", _unitClass, _location];
+	};
 
 	_unit doMove (getPos (selectRandom playableUnits));
 	_unit setUnitAbility hosSkill; //todo https://community.bistudio.com/wiki/CfgAISkill

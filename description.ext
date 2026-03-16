@@ -212,9 +212,9 @@ class Params
 	class HOSTILE_MULTIPLIER
 	{
 		title = "Number of hostiles per wave";
-		values[] = {0.5,1,2,3};
+		values[] = {50,100,200,300};
 		texts[] = {"Low (Easiest)", "Normal", "Double", "Tripple (Hardest)"};
-		default = 1;
+		default = 100;
 	};
 
 	class HOSTILE_TEAM_MULTIPLIER
@@ -228,7 +228,7 @@ class Params
 	class PISTOL_HOSTILES
 	{
 		title = "Hostiles only use pistols until wave";
-		values[] = {0, 1, 2, 3, 4, 5, 10, 15, 25, 30};
+		values[] = {0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30};
 		texts[] = {"Start Fully Armed", "One", "Two", "Three", "Four", "Five", "Ten", "Fifteen", "Twenty", "Twenty Five", "Thirty"};
 		default = 3;
 	};
@@ -252,9 +252,9 @@ class Params
 	class MAX_WAVES
 	{
 		title = "How Many Waves";
-		values[] = {"infinite", 20, 30, 40};
+		values[] = {0, 20, 30, 40};
 		texts[] = {"Infinite", "20", "30", "40"};
-		default = "infinite";
+		default = 0;
 	};
 
 	class BULWARK_MEDIKIT
@@ -380,9 +380,9 @@ class Params
 	class RANDOM_WEAPONS
 	{
 		title = "Randomize Hostile Weapons";
-		values[] = {"true", "false"};
+		values[] = {1, 0};
 		texts[] = {"Yes", "No"};
-		default = "true";
+		default = 1;
 	};
 
 	class LAMBS_AI
@@ -398,7 +398,7 @@ class Params
 		title = "Point Hitmarkers on HUD";
 		values[] = {1, 0};
 		texts[] = {"Yes", "No"};
-		default = "1";
+		default = 1;
 	};
 
 	class BULWARK_LABEL_SPACE
