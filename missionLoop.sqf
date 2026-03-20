@@ -12,7 +12,7 @@ _maxWaves = ("MAX_WAVES" call BIS_fnc_getParamValue);
 
 _CenterPos = _this;
 // Preserve attkWave on manual restart from Zeus console — only reset on a fresh mission start
-if (isNil "attkWave" || attkWave < 0) then { attkWave = 0; publicVariable "attkWave"; };
+if (isNil "attkWave" || { attkWave < 0 }) then { attkWave = 0; publicVariable "attkWave"; };
 suicideWave = false;
 
 waveUnits = [[],[],[]];
@@ -29,6 +29,7 @@ if (isServer) then {
 	execVM "loot\spawnLoot.sqf";
 };
 
+diag_log format ["DynBulwarks: missionLoop — starting (attkWave=%1, maxWaves=%2, specialWaves=%3)", attkWave, _maxWaves, _specialWaves];
 sleep 15;
 runMissionLoop = true;
 missionFailure = false;
@@ -44,6 +45,7 @@ while {runMissionLoop} do {
 	AIstuckcheck = 0;
 	AIStuckCheckArray = [];
 
+	diag_log format ["DynBulwarks: missionLoop — entering wave loop (attkWave=%1, players=%2)", attkWave, count (allPlayers - entities "HeadlessClient_F")];
 	[] call bulwark_fnc_startWave;
 
 	// Staleness failsafe: track last EAST count and time to detect units stuck underground
@@ -85,6 +87,7 @@ while {runMissionLoop} do {
 		} foreach _allHPs;
 		_respawnTickets = [west] call BIS_fnc_respawnTickets;
 		if (count (_allHPs - _deadUnconscious) <= 0 && _respawnTickets <= 0) then {
+			diag_log format ["DynBulwarks: missionLoop — all players down (alive=%1, tickets=%2), checking for revival", count (_allHPs - _deadUnconscious), _respawnTickets];
 			sleep 1;
 
 			//Check that Players have not been revived
@@ -97,6 +100,7 @@ while {runMissionLoop} do {
 			if (count (_allHPs - _deadUnconscious) <= 0 && _respawnTickets <= 0) then {
 				sleep 1;
 				if (count (_allHPs - _deadUnconscious) <= 0 && _respawnTickets <= 0) then {
+					diag_log "DynBulwarks: missionLoop — mission failure triggered (End1)";
 					runMissionLoop = false;
 					missionFailure = true;
 					"End1" call BIS_fnc_endMissionServer;
@@ -113,9 +117,11 @@ while {runMissionLoop} do {
 	if(missionFailure) exitWith {};
 
 	if (_maxWaves > 0 && {attkWave >= _maxWaves}) exitWith {
+		diag_log format ["DynBulwarks: missionLoop — max waves reached (%1), ending mission (End2)", attkWave];
 		"End2" call BIS_fnc_endMissionServer;
 	};
 
+	diag_log format ["DynBulwarks: missionLoop — wave %1 cleared, calling endWave", attkWave];
 	[] call bulwark_fnc_endWave;
 
 };

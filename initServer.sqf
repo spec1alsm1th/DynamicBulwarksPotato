@@ -6,6 +6,7 @@ publicVariable "playersInWave";
 DB_specBulwarkPos = [];
 publicVariable "DB_specBulwarkPos";
 
+diag_log "DynBulwarks: initServer — loading lists";
 ["<t size = '.5'>Loading lists.<br/>Please wait...</t>", 0, 0, 10, 0] remoteExec ["BIS_fnc_dynamicText", 0];
 _hLocation = [] execVM "locationLists.sqf";
 _hLoot     = [] execVM "loot\lists.sqf";
@@ -15,14 +16,18 @@ waitUntil {
     scriptDone _hLoot &&
     scriptDone _hHostiles
 };
+diag_log "DynBulwarks: initServer — lists done, loading editMe.sqf";
 _hConfig   = [] execVM "editMe.sqf";
 waitUntil { scriptDone _hConfig };
+diag_log "DynBulwarks: initServer — editMe.sqf done";
 
 // Wait for host/admin to pick bulwark position (only needed when using List_SpecificPoint)
+diag_log "DynBulwarks: initServer — waiting for bulwark position";
 private _t0 = time;
 waitUntil {
     ((DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) ) || ((time - _t0) > 300)
 };
+diag_log format ["DynBulwarks: initServer — bulwark pos wait done (DB_specBulwarkPos=%1, elapsed=%2s)", DB_specBulwarkPos, round (time - _t0)];
 
 if (DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) then {
     private _pos = DB_specBulwarkPos;
@@ -35,9 +40,11 @@ if (DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) then {
     "specBulwarkLoc" setMarkerPos _pos;
 };
 
+diag_log "DynBulwarks: initServer — creating base";
 ["<t size = '.5'>Creating Base...</t>", 0, 0, 30, 0] remoteExec ["BIS_fnc_dynamicText", 0];
 _basepoint = [] execVM "bulwark\createBase.sqf";
 waitUntil { scriptDone _basepoint };
+diag_log format ["DynBulwarks: initServer — base created (bulwarkCity=%1)", bulwarkCity];
 
 ["<t size = '.5'>Ready</t>", 0, 0, 0.5, 0] remoteExec ["BIS_fnc_dynamicText", 0];
 
@@ -122,6 +129,7 @@ switch (_weatherParam) do {
 	};
 };
 
+diag_log format ["DynBulwarks: initServer — spawning child scripts (MISSION_WEATHER=%1, TIME=%2)", MISSION_WEATHER, _timeToSet];
 [] execVM "revivePlayers.sqf";
 [bulwarkRoomPos] execVM "missionLoop.sqf";
 
@@ -129,3 +137,4 @@ switch (_weatherParam) do {
 [] execVM "hostiles\clearStuck.sqf";
 //[] execVM "hostiles\solidObjects.sqf";
 [] execVM "hostiles\moveHosToPlayer.sqf";
+diag_log "DynBulwarks: initServer — complete";

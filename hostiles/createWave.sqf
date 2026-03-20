@@ -53,21 +53,25 @@ if (attkWave >= (_armourStartWave + 20)) then {
 };
 
 if ((attkWave >= _armourStartWave && (floor random ArmourChance) == 1) || (attkWave >= _armourStartWave && wavesSinceArmour >= ArmourMaxSince)) then {
+	diag_log format ["DynBulwarks: createWave — spawning armour (wavesSinceArmour=%1, ArmourCount=%2)", wavesSinceArmour, ArmourCount];
 	_spwnVec = execVM "hostiles\spawnVehicle.sqf";
 	waitUntil {scriptDone _spwnVec};
 	wavesSinceArmour = 0;
 }else{
 	if (attkWave >= _armourStartWave) then {
+		diag_log format ["DynBulwarks: createWave — no armour this wave (wavesSinceArmour=%1)", wavesSinceArmour];
 		wavesSinceArmour = wavesSinceArmour + 1;
 	};
 };
 
 if ((attkWave >= _armourStartWave && (floor random carChance) == 1) || (attkWave >= _armourStartWave && wavesSinceCar >= carMaxSince)) then {
+	diag_log format ["DynBulwarks: createWave — spawning car (wavesSinceCar=%1, carCount=%2)", wavesSinceCar, carCount];
 	_spwnVec = execVM "hostiles\spawnCar.sqf";
 	waitUntil {scriptDone _spwnVec};
 	wavesSinceCar = 0;
 }else{
 	if (attkWave >= _armourStartWave) then {
+		diag_log format ["DynBulwarks: createWave — no car this wave (wavesSinceCar=%1)", wavesSinceCar];
 		wavesSinceCar = wavesSinceCar + 1;
 	};
 };

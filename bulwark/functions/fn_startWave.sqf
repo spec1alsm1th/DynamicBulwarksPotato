@@ -126,6 +126,8 @@ if (specialWave && attkWave >= 10) then {
 	//SpecialWaveType = "airborneWave"; //else for testing new special waves: do not remove
 };
 
+diag_log format ["DynBulwarks: startWave — specialWave=%1, SpecialWaveType=%2, wavesSinceSpecial=%3", specialWave, SpecialWaveType, wavesSinceSpecial];
+
 if (SpecialWaveType == "suicideWave") then {
 	suicideWave = true;
 	execVM "hostiles\suicideWave.sqf";
@@ -345,8 +347,10 @@ if (!specialWave) then {
 } foreach allMissionObjects "Air";
 
 // Spawn
+diag_log format ["DynBulwarks: startWave — spawning hostiles (wave=%1)", attkWave];
 _createHostiles = execVM "hostiles\createWave.sqf";
 waitUntil {scriptDone _createHostiles};
+diag_log format ["DynBulwarks: startWave — hostiles spawned (EAST count=%1)", EAST countSide allUnits];
 
 if (attkWave > 1) then { //if first wave give player extra time before spawning enemies
 	{deleteMarker _x} foreach lootDebugMarkers;

@@ -6,6 +6,7 @@
 *  Domain: Server
 **/
 
+diag_log format ["DynBulwarks: endWave — wave %1 complete, entering build phase (downTime=%2)", attkWave, _downTime];
 // variable to prevent players rejoining during a wave
 playersInWave = [];
 publicVariable "playersInWave";
@@ -47,4 +48,6 @@ publicVariable "RESPAWN_TIME";
 MIND_CONTROLLED_AI = [];
 publicVariable "MIND_CONTROLLED_AI";
 
+diag_log format ["DynBulwarks: endWave — sleeping %1s (build phase)", _downTime];
 sleep _downTime;
+diag_log "DynBulwarks: endWave — build phase over";
