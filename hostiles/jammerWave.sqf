@@ -14,8 +14,8 @@ private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR }
 private _jammerPos = [bulwarkCity, 15, (BULWARK_RADIUS * 0.8) max 40, 5, 0, 0, 0] call BIS_fnc_findSafePos;
 if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [30, 0, 0]; };
 
-// Jammer prop — use an ammo box (has a real damage model, satisfying to destroy)
-private _jammerObj = createVehicle ["Land_SatelliteAntenna_01_F", _jammerPos, [], 0, "CAN_COLLIDE"];
+// Jammer prop — BTR-50 signals vehicle; players must destroy it
+private _jammerObj = createVehicle ["vn_o_armor_btr50pk_02", _jammerPos, [], 0, "CAN_COLLIDE"];
 _jammerObj allowDamage true;
 mainZeus addCuratorEditableObjects [[_jammerObj], true];
 

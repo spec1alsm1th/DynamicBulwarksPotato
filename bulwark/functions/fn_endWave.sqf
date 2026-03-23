@@ -6,6 +6,7 @@
 *  Domain: Server
 **/
 
+_downTime = ("DOWN_TIME" call BIS_fnc_getParamValue);
 diag_log format ["DynBulwarks: endWave — wave %1 complete, entering build phase (downTime=%2)", attkWave, _downTime];
 // variable to prevent players rejoining during a wave
 playersInWave = [];

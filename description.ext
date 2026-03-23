@@ -76,7 +76,7 @@ class CfgDebriefing
 {
 	class End1
 	{
-		title = [END];
+		title = "[END]";
 		subtitle = "You were wiped out";
 		description = "Game Over";
 		pictureBackground = "";
