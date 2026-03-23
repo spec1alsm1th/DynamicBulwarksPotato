@@ -28,11 +28,11 @@ sleep 2;
 
 //create smoke grenade and recruit AI
 for [{_i=0}, {_i<8}, {_i=_i+1}] do {
-  _nearAI = _smoker nearEntities _i;
+  _nearAI = _smoker nearEntities (_i * 50);
   _aiToJoin = [];
   {
     if (side _x == east && _x isKindOf "Man") then {
-      _aiToJoin join _player;
+      _x join (group _player);
       _aiToJoin pushBack _x;
     };
   }foreach _nearAI;

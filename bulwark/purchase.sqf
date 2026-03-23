@@ -9,6 +9,8 @@
 _index = lbCurSel 1500;
 shopVehic = objNull;
 
+if (_index < 0) exitWith {};
+
 _shopPrice = (BULWARK_BUILDITEMS select _index) select 0;
 _shopName  = (BULWARK_BUILDITEMS select _index) select 1;
 _shopClass = (BULWARK_BUILDITEMS select _index) select 2;
