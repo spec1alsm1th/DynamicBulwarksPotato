@@ -8,7 +8,7 @@ if (!_buildPhase) then { // free respawn in build phase
 		publicVariable "RESPAWN_TIME";
 		[RESPAWN_TIME] remoteExec ["setPlayerRespawnTime", 0];
 	} else {
-    [0] remoteExec ["setPlayerRespawnTime", 0];
+    [RESPAWN_TIME] remoteExec ["setPlayerRespawnTime", 0];
   }
 };
 
