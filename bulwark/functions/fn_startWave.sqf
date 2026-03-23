@@ -131,7 +131,7 @@ diag_log format ["DynBulwarks: startWave — specialWave=%1, SpecialWaveType=%2,
 if (SpecialWaveType == "suicideWave") then {
 	suicideWave = true;
 	execVM "hostiles\suicideWave.sqf";
-	execVM "hostiles\suicideAudio.sqf";
+	execVM "hostiles\SuicideAudio.sqf";
 } else {
 	suicideWave = false;
 };

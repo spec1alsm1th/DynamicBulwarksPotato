@@ -79,7 +79,7 @@ player createDiarySubject ["DynamicBulwarks","Dynamic Bulwarks","preview.paa"];
 
 player createDiaryRecord ["DynamicBulwarks", ["Looting", "
 <br />
-Loot such as weapons, ammo, clothing and equipement can be found in buildings. Almost every item in the game (and any mods you have loaded) should be possible to find.
+Loot such as weapons, ammo, clothing and equipment can be found in buildings. Almost every item in the game (and any mods you have loaded) should be possible to find.
 <br />
 <br />
 There are also some special loot items that can be found:
@@ -94,7 +94,7 @@ There are also some special loot items that can be found:
 <font color='#FFCC00'>Spin Box</font> - An innocuous wooden box that's definitely not a ripoff from a popular Zombie game... If you find the box you can spin it for random weapons, for a price of course. Be warned, eventually the box will steal your money and move to a new location.
 <br />
 <br />
-<font color='#FFCC00'>Satellite Dish</font> - Unlocks the Support Menu at the Bulwark Box and rewards you with Points! One will spawn each wave until found. (Needs to be enabled in mission paramters)
+<font color='#FFCC00'>Satellite Dish</font> - Unlocks the Support Menu at the Bulwark Box and rewards you with Points! One will spawn each wave until found. (Needs to be enabled in mission parameters)
 "]];
 
 
@@ -117,7 +117,7 @@ player createDiaryRecord ["DynamicBulwarks", ["Supports", "<br />Supports can be
 <font color='#FFCC00'>Mine Cluster Shell</font> - Call in a Mine Cluster Shell to create an instant mine field wherever you are looking or on a selected location on the map
 <br />
 <br />
-<font color='#FFCC00'>Rage Stimpack</font> - No need to reload, unlimited ammo, invicibility and increased speed for a short time.
+<font color='#FFCC00'>Rage Stimpack</font> - No need to reload, unlimited ammo, invincibility and increased speed for a short time.
 <br />
 <br />
 <font color='#FFCC00'>ARMAKART TM</font> - 1 minute in an invincible Go-Kart with an automatically targeting HMG
@@ -130,12 +130,12 @@ player createDiaryRecord ["DynamicBulwarks", ["Supports", "<br />Supports can be
 <br />
 <br />
 <br />
-Some Supports can be targeted by just looking at the target when you call the Support. Alternatively, you can use your map to target the support by openning your map and bring up the support menu. Have the support highlighted and then middle click your mouse on the map to have the support target that location."]];
+Some Supports can be targeted by just looking at the target when you call the Support. Alternatively, you can use your map to target the support by opening your map and bring up the support menu. Have the support highlighted and then middle click your mouse on the map to have the support target that location."]];
 
 player createDiaryRecord ["DynamicBulwarks", ["How to Play", "<img image='preview.paa' height=175 width=350/>
 <br />
 <br />
-<font color='#FFCC00'>You are unarmed and there are hostile untis moving towards you. Survive for as many waves as possible.</font>
+<font color='#FFCC00'>You are unarmed and there are hostile units moving towards you. Survive for as many waves as possible.</font>
 <br />
 <br />
 Search buildings for weapons, equipment and supplies. Build a Bulwark and defend it for as long as you can!
@@ -169,7 +169,7 @@ hint "";
 
 // kill player if they disconnected and rejoined during a wave
 _buildPhase = bulwarkBox getVariable ["buildPhase", true];
-waitUntil {alive player && !isnil "playersInWave" && !isnil "attkWave"};
+waitUntil {alive player && !isNil "playersInWave" && !isNil "attkWave"};
 
 if (getPlayerUID player in playersInWave && attkWave > 0 && !_buildPhase) then {
     player setDamage 1;
