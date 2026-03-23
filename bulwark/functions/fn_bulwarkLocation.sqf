@@ -45,7 +45,7 @@ while {isNil "_finalPos"} do {
 				};
 			};
 			_totalSurface = _water + _land;
-			_landPercent = (_land / _totalSurface) * 100;
+			_landPercent = if (_totalSurface > 0) then { (_land / _totalSurface) * 100 } else { 0 };
 
 			if(_landPercent > BULWARK_LANDRATIO) then {
 				_options append [_largestPos];
