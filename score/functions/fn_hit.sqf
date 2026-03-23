@@ -13,7 +13,7 @@ if (isServer) then {
     if (isPlayer _instigator) then {
         private _hitScore = (SCORE_HIT + (SCORE_DAMAGE_BASE * _dmg)) min SCORE_KILL;
         [_instigator, _hitScore] call killPoints_fnc_add;
-        _pointsArr = _unit getVariable "points";
+        _pointsArr = _unit getVariable ["points", []];
         _pointsArr pushBack _hitScore;
         _unit setVariable ["points", _pointsArr];
 
