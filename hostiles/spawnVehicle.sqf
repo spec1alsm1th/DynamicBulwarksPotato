@@ -6,6 +6,10 @@
 *  Domain: Server
 **/
 
+if (count List_Armour == 0) exitWith {
+	diag_log "DynBulwarks: spawnVehicle — List_Armour is empty, skipping armour spawn";
+};
+
 for "_i" from 1 to (ArmourCount) do {
 	_location = [bulwarkCity, BULWARK_RADIUS, BULWARK_RADIUS + 150,10,0] call BIS_fnc_findSafePos;
 	_foundVeh = selectRandom List_Armour;

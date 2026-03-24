@@ -6,6 +6,10 @@
 *  Domain: Server
 **/
 
+if (count List_ArmedCars == 0) exitWith {
+	diag_log "DynBulwarks: spawnCar — List_ArmedCars is empty, skipping car spawn";
+};
+
 for "_i" from 1 to (carCount) do {
 	_location = [bulwarkCity, BULWARK_RADIUS, BULWARK_RADIUS + 150,10,0] call BIS_fnc_findSafePos;
 	_foundVeh = selectRandom List_ArmedCars;
