@@ -47,9 +47,7 @@ for "_i" from 0 to (_guardCount - 1) do {
 	_initialGuards pushBack _guard;
 };
 
-// Activate jammer — support menu locked in fn_support.sqf
-jammerActive = true;
-publicVariable "jammerActive";
+// jammerActive already set to true in fn_startWave before this script was execVM'd
 
 // Map marker — shows a search area; jammer is inside the ellipse (exact position not revealed)
 private _markerCenter = [

@@ -209,7 +209,8 @@ if (SpecialWaveType == "bombWave") then {
 
 if (SpecialWaveType == "jammerWave") then {
 	jammerWave = true;
-	jammerActive = false;
+	jammerActive = true;
+	publicVariable "jammerActive";
 	[] execVM "hostiles\jammerWave.sqf";
 } else {
 	jammerWave = false;
