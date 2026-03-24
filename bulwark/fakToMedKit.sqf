@@ -9,6 +9,7 @@
 _fakArr = ["FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit","FirstAidKit"];
 
 while {true} do{
+  sleep 1;
   _bulwarkContents = itemCargo bulwarkBox;
   _countFaks = {_x == "FirstAidKit"} count _bulwarkContents;
   if (_countFaks >= 15) then {
