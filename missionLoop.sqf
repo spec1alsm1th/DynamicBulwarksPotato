@@ -60,8 +60,8 @@ while {runMissionLoop} do {
 		_allHCs = entities "HeadlessClient_F";
 		_allHPs = allPlayers - _allHCs;
 
-		//Check if all hostiles dead
-		if (EAST countSide allUnits == 0) exitWith {};
+		//Check if all hostiles dead (jammer wave: keep wave alive until jammer is destroyed)
+		if (EAST countSide allUnits == 0 && {isNil "jammerActive" || {!jammerActive}}) exitWith {};
 
 		// Staleness failsafe: if EAST count hasn't changed for 10 minutes, kill remaining units
 		// (handles units clipped underground or otherwise inaccessible to Zeus/players)

@@ -17,11 +17,21 @@ if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [30, 0, 0]; 
 // Jammer prop — BTR-50 signals vehicle; players must destroy it
 private _jammerObj = createVehicle ["vn_o_armor_btr50pk_02", _jammerPos, [], 0, "CAN_COLLIDE"];
 _jammerObj allowDamage true;
+_jammerObj lock 2;
 mainZeus addCuratorEditableObjects [[_jammerObj], true];
+
+// Gunner — one enemy mans the turret
+private _gunnerGrp = createGroup [EAST, true];
+private _gunner = _gunnerGrp createUnit [_guardClass, _jammerPos, [], 0, "FORM"];
+_gunner moveInGunner _jammerObj;
+_gunner setBehaviour "COMBAT";
+_gunner setCombatMode "RED";
+mainZeus addCuratorEditableObjects [[_gunner], true];
+(waveUnits select 0) pushBack _gunner;
 
 // Guard ring — 6–8 guards
 private _guardCount = 6 + floor (random 3);
-private _initialGuards = [];
+private _initialGuards = [_gunner];
 private _jammerX = _jammerPos select 0;
 private _jammerY = _jammerPos select 1;
 
