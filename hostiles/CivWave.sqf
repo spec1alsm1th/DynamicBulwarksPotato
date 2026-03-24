@@ -24,9 +24,17 @@ for [{_i = 0}, {_i < _cfgVehiclesConfigCount}, {_i = _i + 1}] do
   };
 };
 
+if (count civClassArr == 0) then { civClassArr = ["C_man_1"]; };
+if (count lootHouses == 0) exitWith {
+  diag_log "DynBulwarks: civWave — no lootHouses, skipping civilian spawn";
+};
+
 for [{_i=0}, {_i<20}, {_i=_i+1}] do {
   //find random location for Civ to spawn
+  private _attempts = 0;
   _civRoom = while {true} do {
+    _attempts = _attempts + 1;
+    if (_attempts > 50) exitWith { getPos (selectRandom lootHouses) };
     _civBulding = selectRandom lootHouses;
     _civRooms = _civBulding buildingPos -1;
     _civRoom = selectRandom _civRooms;
