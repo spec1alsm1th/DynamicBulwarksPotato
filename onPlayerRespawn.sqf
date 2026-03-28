@@ -70,6 +70,7 @@ if(PLAYER_STARTNVG) then {
 
 if (roleDescription _player == "Engineer") then {
     _player addItem "ToolKit";
+    _player setUnitTrait ["engineer", true];
 };
 
 if (isClass (configfile >> "CfgVehicles" >> "tf_anarc164")) then {
