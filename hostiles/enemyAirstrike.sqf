@@ -52,7 +52,6 @@ _heliGroup setBehaviour "COMBAT";
 
 private _wp = _heliGroup addWaypoint [position bulwarkBox, 0];
 _wp setWaypointType "SAD";
-_wp setWaypointFlyInHeight 80;
 
 mainZeus addCuratorEditableObjects [[_heli], true];
 

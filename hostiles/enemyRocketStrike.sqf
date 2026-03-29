@@ -41,9 +41,8 @@ if (_factionParam == 7) then {
 	if (isNull _gunner) then { _gunner = driver _h12; };
 
 	// Detect loaded ammo; fall back to known classname
-	private _h12Ammo = "";
-	{ if ((_x select 1) > 0) exitWith { _h12Ammo = _x select 0; }; } forEach (magazinesTurret [_h12, [0]]);
-	if (_h12Ammo == "") then { _h12Ammo = "vn_h12_v_12_he_mag"; };
+	private _h12Mags = _h12 magazinesTurret [0];
+	private _h12Ammo = if (count _h12Mags > 0) then { _h12Mags select 0 } else { "vn_h12_v_12_he_mag" };
 
 	sleep 2;
 	if (!isNull _gunner) then {
