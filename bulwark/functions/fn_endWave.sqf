@@ -52,3 +52,5 @@ publicVariable "MIND_CONTROLLED_AI";
 diag_log format ["DynBulwarks: endWave — sleeping %1s (build phase)", _downTime];
 sleep _downTime;
 diag_log "DynBulwarks: endWave — build phase over";
+
+BULWARK_ENDWAVE_OK = true;

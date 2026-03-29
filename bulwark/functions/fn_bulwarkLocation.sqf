@@ -1,8 +1,13 @@
-_locations = _this select 0;
+_locations = (_this select 0) select { _x isEqualType [] && { count _x >= 2 } };
 _radius = _this select 1;
 
 _finalPos = nil;
 _finalCity = nil;
+
+if (count _locations == 0) exitWith {
+	diag_log "DynBulwarks: fn_bulwarkLocation — ERROR: no valid positions in _locations!";
+	[[0,0,0], [0,0,0]];
+};
 
 _probe = createVehicle ["Sign_Arrow_F", [0,0,0], [], 0, "CAN_COLLIDE"];
 while {isNil "_finalPos"} do {

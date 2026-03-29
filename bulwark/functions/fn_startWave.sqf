@@ -375,3 +375,5 @@ if (attkWave >= 10) then {
 		};
 	};
 };
+
+BULWARK_STARTWAVE_OK = true;

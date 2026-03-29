@@ -47,12 +47,9 @@ while {runMissionLoop} do {
 
 	diag_log format ["DynBulwarks: missionLoop — entering wave loop (attkWave=%1, players=%2)", attkWave, count (allPlayers - entities "HeadlessClient_F")];
 
-	private _startWaveCompleted = false;
-	isNil {
-		[] call bulwark_fnc_startWave;
-		_startWaveCompleted = true;
-	};
-	if (!_startWaveCompleted) then {
+	BULWARK_STARTWAVE_OK = false;
+	[] call bulwark_fnc_startWave;
+	if (!BULWARK_STARTWAVE_OK) then {
 		private _msg = format ["MISSION LOOP ALERT: bulwark_fnc_startWave CRASHED on wave %1! Loop may be broken.", attkWave];
 		diag_log ("DynBulwarks: " + _msg);
 		["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];
@@ -133,12 +130,9 @@ while {runMissionLoop} do {
 
 	diag_log format ["DynBulwarks: missionLoop — wave %1 cleared, calling endWave", attkWave];
 
-	private _endWaveCompleted = false;
-	isNil {
-		[] call bulwark_fnc_endWave;
-		_endWaveCompleted = true;
-	};
-	if (!_endWaveCompleted) then {
+	BULWARK_ENDWAVE_OK = false;
+	[] call bulwark_fnc_endWave;
+	if (!BULWARK_ENDWAVE_OK) then {
 		private _msg = format ["MISSION LOOP ALERT: bulwark_fnc_endWave CRASHED on wave %1! Loop may be broken.", attkWave];
 		diag_log ("DynBulwarks: " + _msg);
 		["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];

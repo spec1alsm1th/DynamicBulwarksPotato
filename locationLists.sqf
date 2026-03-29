@@ -1,4 +1,4 @@
-List_SpecificPoint = [getMarkerPos "specBulwarkLoc", ""];
+List_SpecificPoint = [getMarkerPos "specBulwarkLoc"];
 deleteMarker "specBulwarkLoc";
 
 _zoneMarkers = [];
