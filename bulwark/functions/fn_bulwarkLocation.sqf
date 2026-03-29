@@ -20,12 +20,16 @@ while {isNil "_finalPos"} do {
 		// Go through the positions in the house to find the largest
 		{
 			_probe setPos _x;
-			_roomVolume = [_probe, getDir _house] call bulwark_fnc_roomVolume;
-			if(_roomVolume select 0) then {
+			private _roomVolume = nil;
+			isNil { _roomVolume = [_probe, getDir _house] call bulwark_fnc_roomVolume; };
+			if (!isNil "_roomVolume" && { _roomVolume select 0 }) then {
 				if((_roomVolume select 1 > _largestVolume) && (_roomVolume select 1 > BULWARK_MINSIZE)) then {
-					_roomCentre = [_probe, getDir _house] call bulwark_fnc_roomCentre;
-					_largestPos = _roomCentre select 1;
-					_largestVolume = (_largestVolume max (_roomVolume select 1));
+					private _roomCentre = nil;
+					isNil { _roomCentre = [_probe, getDir _house] call bulwark_fnc_roomCentre; };
+					if (!isNil "_roomCentre") then {
+						_largestPos = _roomCentre select 1;
+						_largestVolume = (_largestVolume max (_roomVolume select 1));
+					};
 				};
 			};
 		} forEach (_house buildingPos -1);

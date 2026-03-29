@@ -42,7 +42,13 @@ removeVest _player;
 removeBackpack _player;
 removeAllWeapons _player;
 removeAllAssignedItems _player;
-_player setPosASL ([bulwarkBox] call bulwark_fnc_findPlaceAround);
+private _spawnPos = nil;
+isNil { _spawnPos = [bulwarkBox] call bulwark_fnc_findPlaceAround; };
+if (isNil "_spawnPos") then {
+	diag_log "DynBulwarks: onPlayerRespawn — findPlaceAround crashed, falling back to bulwarkBox position";
+	_spawnPos = getPos bulwarkBox;
+};
+_player setPosASL _spawnPos;
 
 // Wait for editMe variables to be broadcast before reading them
 waitUntil { !isNil "PLAYER_STARTMAP" };

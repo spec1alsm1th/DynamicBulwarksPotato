@@ -16,7 +16,12 @@ while {_leaving} do {
 
 		// If player is WAYYY outside the bounds. Move them to the bulwark
 		case (_dist > BULWARK_RADIUS * 2): {
-			_newLoc = [bulwarkBox] call bulwark_fnc_findPlaceAround;
+			private _newLoc = nil;
+			isNil { _newLoc = [bulwarkBox] call bulwark_fnc_findPlaceAround; };
+			if (isNil "_newLoc") then {
+				diag_log "DynBulwarks: fn_enforcement — findPlaceAround crashed, falling back to bulwarkCity";
+				_newLoc = bulwarkCity;
+			};
 			_player setPosASL _newLoc;
 		};
 
