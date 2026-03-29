@@ -46,7 +46,15 @@ while {runMissionLoop} do {
 	AIStuckCheckArray = [];
 
 	diag_log format ["DynBulwarks: missionLoop — entering wave loop (attkWave=%1, players=%2)", attkWave, count (allPlayers - entities "HeadlessClient_F")];
-	[] call bulwark_fnc_startWave;
+
+	private _startWaveOK = isNil {
+		[] call bulwark_fnc_startWave;
+	};
+	if (!_startWaveOK) then {
+		private _msg = format ["MISSION LOOP ALERT: bulwark_fnc_startWave CRASHED on wave %1! Loop may be broken.", attkWave];
+		diag_log ("DynBulwarks: " + _msg);
+		["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];
+	};
 
 	// Staleness failsafe: track last EAST count and time to detect units stuck underground
 	private _lastEastCount = EAST countSide allUnits;
@@ -122,6 +130,21 @@ while {runMissionLoop} do {
 	};
 
 	diag_log format ["DynBulwarks: missionLoop — wave %1 cleared, calling endWave", attkWave];
-	[] call bulwark_fnc_endWave;
 
+	private _endWaveOK = isNil {
+		[] call bulwark_fnc_endWave;
+	};
+	if (!_endWaveOK) then {
+		private _msg = format ["MISSION LOOP ALERT: bulwark_fnc_endWave CRASHED on wave %1! Loop may be broken.", attkWave];
+		diag_log ("DynBulwarks: " + _msg);
+		["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];
+	};
+
+};
+
+// If we reach here outside of a normal exit (missionFailure / maxWaves), the loop died unexpectedly
+if (!missionFailure && runMissionLoop) then {
+	private _msg = format ["MISSION LOOP ALERT: main while-loop exited unexpectedly on wave %1! runMissionLoop=%2, missionFailure=%3", attkWave, runMissionLoop, missionFailure];
+	diag_log ("DynBulwarks: " + _msg);
+	["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];
 };
