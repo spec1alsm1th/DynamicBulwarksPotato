@@ -53,10 +53,10 @@ if (!_foundBuilding) then {
 [_hostage, _buildingPos] remoteExec ["setPos", _hostage];
 sleep 0.5;
 
-// Strip weapons (run on server)
-removeAllWeapons _hostage;
-removeAllItems _hostage;
-removeAllAssignedItems _hostage;
+// Strip weapons (must run where unit is local — the player's client)
+[_hostage] remoteExec ["removeAllWeapons", _hostage];
+[_hostage] remoteExec ["removeAllItems", _hostage];
+[_hostage] remoteExec ["removeAllAssignedItems", _hostage];
 
 // Notify hostage
 private _timerSeconds = "HOSTAGE_TIMER" call BIS_fnc_getParamValue;
@@ -148,18 +148,20 @@ _markerName setMarkerText "HOSTAGE";
 	if (_executed) then {
 		if (alive _hostage) then { _hostage setDamage 1; };
 		["SpecialWarning", [format ["%1 was EXECUTED — time ran out!", name _hostage]]] remoteExec ["BIS_fnc_showNotification", 0];
-	} else if (alive _hostage) then {
-		// Rescued!
-		_hostage setUnitLoadout _savedLoadout;
-		["TaskSucceeded", ["RESCUED!", format ["%1 has been rescued!", name _hostage]]] remoteExec ["BIS_fnc_showNotification", 0];
-		// Award points to nearby rescuers (within 50m)
-		{
-			if (side _x == west && _x != _hostage && (_x distance _hostage < 50)) then {
-				[_x, 50] call killPoints_fnc_add;
-			};
-		} forEach allPlayers;
 	} else {
-		["SpecialWarning", [format ["%1 was killed — the hostage is lost.", name _hostage]]] remoteExec ["BIS_fnc_showNotification", 0];
+		if (alive _hostage) then {
+			// Rescued!
+			[_hostage, _savedLoadout] remoteExec ["setUnitLoadout", _hostage];
+			["TaskSucceeded", ["RESCUED!", format ["%1 has been rescued!", name _hostage]]] remoteExec ["BIS_fnc_showNotification", 0];
+			// Award points to nearby rescuers (within 50m)
+			{
+				if (side _x == west && _x != _hostage && (_x distance _hostage < 50)) then {
+					[_x, 50] call killPoints_fnc_add;
+				};
+			} forEach allPlayers;
+		} else {
+			["SpecialWarning", [format ["%1 was killed — the hostage is lost.", name _hostage]]] remoteExec ["BIS_fnc_showNotification", 0];
+		};
 	};
 
 	hostageWave = false;
