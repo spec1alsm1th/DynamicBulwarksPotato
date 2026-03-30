@@ -100,7 +100,7 @@ if (specialWave && attkWave >= 5 and attkWave < 10) then {
 if (specialWave && attkWave >= 10) then {
 	private _wavePool = [
 		"specCivs", "fogWave", "swticharooWave", "suicideWave",
-		"specMortarWave", "nightWave", "demineWave", "defectorWave"
+		"specMortarWave", "demineWave", "defectorWave"
 	];
 	if ("HOSTAGE_WAVE" call BIS_fnc_getParamValue == 1) then {
 		_wavePool pushBack "hostageWave";
