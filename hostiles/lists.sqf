@@ -430,17 +430,27 @@ for "_x" from 0 to (_realentries) do {
 };
 List_Armour = _armouredVehicles;
 
-// Per-faction hardcoded armour list: overrides the config scan for factions with known vehicles.
+// Per-faction armour override: scan CfgVehicles for matching prefixes
 private _armourOverride = switch (_factionParam) do {
-	case 7: { ["vn_o_armor_btr50pk_01", "vn_o_armor_t54b_01", "vn_o_armor_pt76a_01", "vn_o_armor_pt76b_01"] };  // S.O.G. Prairie Fire
+	case 7: {
+		private _prefixes = ["vn_o_armor_btr50pk_", "vn_o_armor_t54b_", "vn_o_armor_pt76a_", "vn_o_armor_pt76b_"];
+		private _results = [];
+		for "_x" from 0 to (count _cfgVehicles - 1) do {
+			private _cv = _cfgVehicles select _x;
+			if (isClass _cv) then {
+				private _cn = configName _cv;
+				if (getNumber (_cv >> "scope") >= 2 && {_prefixes findIf {_cn select [0, count _x] == _x} > -1}) then {
+					_results pushBack _cn;
+				};
+			};
+		};
+		_results
+	};
 	default { [] };
 };
 if (count _armourOverride > 0) then {
-	_armourOverride = _armourOverride select { isClass (configFile >> "CfgVehicles" >> _x) };
-	if (count _armourOverride > 0) then {
-		List_Armour = _armourOverride;
-		diag_log format ["DynBulwarks: Armour hardcoded override for faction %1: %2", _factionParam, List_Armour];
-	};
+	List_Armour = _armourOverride;
+	diag_log format ["DynBulwarks: Armour hardcoded override for faction %1: %2", _factionParam, List_Armour];
 };
 diag_log format ["DynBulwarks: List_Armour=%1", List_Armour];
 
