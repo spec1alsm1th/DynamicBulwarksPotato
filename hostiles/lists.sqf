@@ -430,6 +430,19 @@ for "_x" from 0 to (_realentries) do {
 };
 List_Armour = _armouredVehicles;
 
+// Per-faction hardcoded armour list: overrides the config scan for factions with known vehicles.
+private _armourOverride = switch (_factionParam) do {
+	case 7: { ["vn_o_armor_btr50pk_01", "vn_o_armor_t54b_01", "vn_o_armor_pt76a_01", "vn_o_armor_pt76b_01"] };  // S.O.G. Prairie Fire
+	default { [] };
+};
+if (count _armourOverride > 0) then {
+	_armourOverride = _armourOverride select { isClass (configFile >> "CfgVehicles" >> _x) };
+	if (count _armourOverride > 0) then {
+		List_Armour = _armourOverride;
+		diag_log format ["DynBulwarks: Armour hardcoded override for faction %1: %2", _factionParam, List_Armour];
+	};
+};
+diag_log format ["DynBulwarks: List_Armour=%1", List_Armour];
 
 _armedCars = [];
 _cfgVehicles = configFile >> "CfgVehicles";
@@ -459,6 +472,29 @@ for "_x" from 0 to (_realentries) do {
   };
 };
 List_ArmedCars = _armedCars;
+
+// Per-faction hardcoded car list: scan CfgVehicles for matching prefix
+private _carOverride = switch (_factionParam) do {
+	case 7: {
+		private _results = [];
+		for "_x" from 0 to (count _cfgVehicles - 1) do {
+			private _cv = _cfgVehicles select _x;
+			if (isClass _cv) then {
+				private _cn = configName _cv;
+				if ((_cn select [0, 14]) == "vn_o_wheeled_" && {getNumber (_cv >> "scope") >= 2}) then {
+					_results pushBack _cn;
+				};
+			};
+		};
+		_results
+	};
+	default { [] };
+};
+if (count _carOverride > 0) then {
+	List_ArmedCars = _carOverride;
+	diag_log format ["DynBulwarks: ArmedCars hardcoded override for faction %1: %2", _factionParam, List_ArmedCars];
+};
+diag_log format ["DynBulwarks: List_ArmedCars=%1", List_ArmedCars];
 
 // --- Mortar list (for special mortar wave) ---
 // Scan CfgVehicles for static artillery matching the hostile faction
