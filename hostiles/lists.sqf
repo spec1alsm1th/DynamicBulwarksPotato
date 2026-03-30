@@ -491,7 +491,7 @@ private _carOverride = switch (_factionParam) do {
 			private _cv = _cfgVehicles select _x;
 			if (isClass _cv) then {
 				private _cn = configName _cv;
-				if ((_cn select [0, 14]) == "vn_o_wheeled_" && {getNumber (_cv >> "scope") >= 2}) then {
+				if ((_cn select [0, 13]) == "vn_o_wheeled_" && {getNumber (_cv >> "scope") >= 2}) then {
 					_results pushBack _cn;
 				};
 			};
