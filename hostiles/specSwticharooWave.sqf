@@ -9,7 +9,7 @@
     _distToBulwark = telePos distance bulwarkBox;
     };
     if (telePos distance _x >= 3 && _x distance bulwarkBox < 30) then {
-    _x setPos telePos;
+    [_x, telePos] remoteExec ["setPos", _x];
     };
     telePos = [];
 } forEach allPlayers;
