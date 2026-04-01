@@ -52,27 +52,39 @@ if (attkWave >= (_armourStartWave + 20)) then {
 	carCount = 3 + (floor (playersNumber west / 4));
 };
 
-if ((attkWave >= _armourStartWave && (floor random ArmourChance) == 1) || (attkWave >= _armourStartWave && wavesSinceArmour >= ArmourMaxSince)) then {
-	diag_log format ["DynBulwarks: createWave — spawning armour (wavesSinceArmour=%1, ArmourCount=%2)", wavesSinceArmour, ArmourCount];
-	_spwnVec = execVM "hostiles\spawnVehicle.sqf";
-	waitUntil {scriptDone _spwnVec};
-	wavesSinceArmour = 0;
-}else{
-	if (attkWave >= _armourStartWave) then {
-		diag_log format ["DynBulwarks: createWave — no armour this wave (wavesSinceArmour=%1)", wavesSinceArmour];
-		wavesSinceArmour = wavesSinceArmour + 1;
-	};
-};
+// Suppress armour and cars during defector wave — genuine EAST vehicle crews
+// would engage the NATO-model defectors (WEST faction in CfgVehicles) as enemies
+private _isDefectorWave = !isNil "defectorWave" && { defectorWave };
 
-if ((attkWave >= _armourStartWave && (floor random carChance) == 1) || (attkWave >= _armourStartWave && wavesSinceCar >= carMaxSince)) then {
-	diag_log format ["DynBulwarks: createWave — spawning car (wavesSinceCar=%1, carCount=%2)", wavesSinceCar, carCount];
-	_spwnVec = execVM "hostiles\spawnCar.sqf";
-	waitUntil {scriptDone _spwnVec};
-	wavesSinceCar = 0;
-}else{
+if (_isDefectorWave) then {
+	diag_log "DynBulwarks: createWave — skipping armour/cars (defector wave)";
 	if (attkWave >= _armourStartWave) then {
-		diag_log format ["DynBulwarks: createWave — no car this wave (wavesSinceCar=%1)", wavesSinceCar];
+		wavesSinceArmour = wavesSinceArmour + 1;
 		wavesSinceCar = wavesSinceCar + 1;
+	};
+} else {
+	if ((attkWave >= _armourStartWave && (floor random ArmourChance) == 1) || (attkWave >= _armourStartWave && wavesSinceArmour >= ArmourMaxSince)) then {
+		diag_log format ["DynBulwarks: createWave — spawning armour (wavesSinceArmour=%1, ArmourCount=%2)", wavesSinceArmour, ArmourCount];
+		_spwnVec = execVM "hostiles\spawnVehicle.sqf";
+		waitUntil {scriptDone _spwnVec};
+		wavesSinceArmour = 0;
+	}else{
+		if (attkWave >= _armourStartWave) then {
+			diag_log format ["DynBulwarks: createWave — no armour this wave (wavesSinceArmour=%1)", wavesSinceArmour];
+			wavesSinceArmour = wavesSinceArmour + 1;
+		};
+	};
+
+	if ((attkWave >= _armourStartWave && (floor random carChance) == 1) || (attkWave >= _armourStartWave && wavesSinceCar >= carMaxSince)) then {
+		diag_log format ["DynBulwarks: createWave — spawning car (wavesSinceCar=%1, carCount=%2)", wavesSinceCar, carCount];
+		_spwnVec = execVM "hostiles\spawnCar.sqf";
+		waitUntil {scriptDone _spwnVec};
+		wavesSinceCar = 0;
+	}else{
+		if (attkWave >= _armourStartWave) then {
+			diag_log format ["DynBulwarks: createWave — no car this wave (wavesSinceCar=%1)", wavesSinceCar];
+			wavesSinceCar = wavesSinceCar + 1;
+		};
 	};
 };
 
@@ -94,21 +106,23 @@ if (!airborneWave) then {
 	private _class2 = if (_isDefector) then { DEFECTOR_CLASS } else { HOSTILE_LEVEL_2 };
 	private _class3 = if (_isDefector) then { DEFECTOR_CLASS } else { HOSTILE_LEVEL_3 };
 
-	_squadCount = floor (attkWave * _multiplierBase);
-	for ("_i") from 1 to (floor (attkWave * _multiplierBase)) do {
+	// Double infantry during defector wave to compensate for no armour/cars
+	private _defectorMulti = if (_isDefector) then { 2 } else { 1 };
+	_squadCount = floor (attkWave * _multiplierBase * _defectorMulti);
+	for ("_i") from 1 to (floor (attkWave * _multiplierBase * _defectorMulti)) do {
 		_script = [_class1, attkWave, _noOfPlayers, HOSTILE_LEVEL_1_POINT_SCORE] execVM "hostiles\spawnSquad.sqf";
 		waitUntil {scriptDone _script};
 	};
 
 	if (attkWave > 6) then {
-		for ("_i") from 0 to (floor (_SoldierMulti)) do {
+		for ("_i") from 0 to (floor (_SoldierMulti * _defectorMulti)) do {
 			_script = [_class2, attkWave, _noOfPlayers, HOSTILE_LEVEL_2_POINT_SCORE] execVM "hostiles\spawnSquad.sqf";
 			waitUntil {scriptDone _script};
 		};
 	};
 
 	if (attkWave > 12) then {
-		for ("_i") from 0 to (floor (_SoldierMulti)) do {
+		for ("_i") from 0 to (floor (_SoldierMulti * _defectorMulti)) do {
 			_script = [_class3, attkWave, _noOfPlayers, HOSTILE_LEVEL_3_POINT_SCORE] execVM "hostiles\spawnSquad.sqf";
 			waitUntil {scriptDone _script};
 		};
