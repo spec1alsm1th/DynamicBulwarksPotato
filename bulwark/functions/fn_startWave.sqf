@@ -262,9 +262,26 @@ if (swticharooWave) then {
 	_secCount = 0;
 	_deadUnconscious = [];
 	sleep 1;
+	private _lastEastCount = EAST countSide allUnits;
+	private _staleTimer = 0;
 	while {EAST countSide allUnits > 0} do {
 		_allHCs = entities "HeadlessClient_F";
 		_allHPs = allPlayers - _allHCs;
+
+		// Staleness failsafe: if EAST count unchanged for 5 minutes, force-kill remaining
+		private _curEast = EAST countSide allUnits;
+		if (_curEast < _lastEastCount) then {
+			_lastEastCount = _curEast;
+			_staleTimer = 0;
+		} else {
+			_staleTimer = _staleTimer + 1;
+			if (_staleTimer >= 300) then {
+				diag_log format ["DynBulwarks: Switcheroo staleness failsafe — %1 EAST unit(s) stuck for 5 min, force-killing", _curEast];
+				{ if (side _x == east && alive _x) then { _x setDamage 1; }; } forEach allUnits;
+				_staleTimer = 0;
+			};
+		};
+
 		{
 			if ((!alive _x) || ((lifeState _x) == "INCAPACITATED")) then {
 				_deadUnconscious pushBack _x;
@@ -288,6 +305,7 @@ if (swticharooWave) then {
 				};
 			};
 		};
+		sleep 1;
 	};
 };
 
