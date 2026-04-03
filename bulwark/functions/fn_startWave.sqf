@@ -9,6 +9,7 @@
 
 ["Terminate"] remoteExec ["BIS_fnc_EGSpectator", 0];
 [] remoteExec ["killPoints_fnc_updateHud", 0];
+BULWARK_WAVE_SKIPPED = false;
 
 for ("_i") from 0 to 14 do {
 	if(_i > 10) then {"beep_target" remoteExec ["playsound", 0];} else {"readoutClick" remoteExec ["playsound", 0];};
@@ -364,6 +365,12 @@ if (!specialWave) then {
 		deleteVehicle _x;
 	};
 } foreach allMissionObjects "Air";
+
+// If wave was skipped (e.g. during switcheroo phase), skip straight to endWave
+if (BULWARK_WAVE_SKIPPED) exitWith {
+	diag_log "DynBulwarks: startWave — wave was skipped, skipping createWave spawn";
+	BULWARK_STARTWAVE_OK = true;
+};
 
 // Spawn
 diag_log format ["DynBulwarks: startWave — spawning hostiles (wave=%1)", attkWave];

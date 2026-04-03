@@ -19,6 +19,9 @@ diag_log format ["DynBulwarks: skipWave triggered by %1", _playerName];
 
 ["SpecialWarning", [format ["%1 called in a wave skip!", _playerName]]] remoteExec ["BIS_fnc_showNotification", 0];
 
+// Signal fn_startWave to skip the rest of the wave (createWave spawn, loot, etc.)
+BULWARK_WAVE_SKIPPED = true;
+
 // Kill all remaining EAST infantry (allUnits = alive soldiers only)
 { if (side _x == east && alive _x) then { _x setDamage 1; }; } forEach allUnits;
 
