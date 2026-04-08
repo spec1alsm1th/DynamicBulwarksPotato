@@ -50,6 +50,17 @@ _heli flyInHeight 80;
 _heliGroup setCombatMode "RED";
 _heliGroup setBehaviour "COMBAT";
 
+// Reveal all players so the helicopter engages immediately without waiting to spot
+{ _heliGroup reveal _x; } forEach allPlayers;
+
+// Improve crew spotting so they don't lose track of targets
+{
+	private _crewUnit = _x select 0;
+	_crewUnit setSkill ["spotDistance", 1];
+	_crewUnit setSkill ["spotTime", 0.2];
+	_crewUnit setSkill ["courage", 1];
+} forEach fullCrew _heli;
+
 private _wp = _heliGroup addWaypoint [position bulwarkBox, 0];
 _wp setWaypointType "SAD";
 
