@@ -14,9 +14,11 @@
 
 private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
 
-// Shared: spawn position off-map, scatter target around bulwark
-private _spawnPos = [bulwarkCity, BULWARK_RADIUS + 600, BULWARK_RADIUS + 900, 3, 0, 10, 0] call BIS_fnc_findSafePos;
-if (count _spawnPos < 2) then { _spawnPos = bulwarkCity; };
+// waterMode=1 (land only), flatRadius=0 (skip flatness check — static launchers work on slopes)
+private _spawnPos = [bulwarkCity, BULWARK_RADIUS + 600, BULWARK_RADIUS + 900, 1, 0, 0, 0] call BIS_fnc_findSafePos;
+if (count _spawnPos < 2) exitWith {
+	diag_log "DynBulwarks: enemyRocketStrike — findSafePos failed, aborting strike";
+};
 
 private _cx = position bulwarkBox select 0;
 private _cy = position bulwarkBox select 1;
@@ -25,6 +27,8 @@ private _targetPos = [
 	_cy + (random 70) - 35,
 	0
 ];
+
+diag_log format ["DynBulwarks: enemyRocketStrike — spawnPos=%1 targetPos=%2", _spawnPos, _targetPos];
 
 if (_factionParam == 7) then {
 
@@ -45,12 +49,13 @@ if (_factionParam == 7) then {
 	private _h12Ammo = if (count _h12Mags > 0) then { _h12Mags select 0 } else { "vn_h12_v_12_he_mag" };
 
 	sleep 2;
+	diag_log format ["DynBulwarks: enemyRocketStrike — H12: %1, gunnerNull=%2, ammo=%3", _h12Class, isNull _gunner, _h12Ammo];
 	if (!isNull _gunner) then {
 		_gunner doArtilleryFire [_targetPos, _h12Ammo, 3];
+		["SpecialWarning", ["INCOMING ROCKETS! Take cover!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	} else {
+		diag_log "DynBulwarks: enemyRocketStrike — H12 gunner is null, no fire";
 	};
-
-	diag_log format ["DynBulwarks: enemyRocketStrike — H12: %1", _h12Class];
-	["SpecialWarning", ["INCOMING ROCKETS! Take cover!"]] remoteExec ["BIS_fnc_showNotification", 0];
 
 	[_h12, _h12Group] spawn {
 		params ["_v", "_g"];
@@ -77,6 +82,7 @@ if (_factionParam == 7) then {
 	private _result = [_spawnPos, 0, _mortarClass, _mortarGroup] call BIS_fnc_spawnVehicle;
 	private _mortar = _result select 0;
 	private _gunner = gunner _mortar;
+	if (isNull _gunner) then { _gunner = driver _mortar; };
 
 	// Use whatever ammo the mortar spawns with; add vanilla rounds as fallback
 	private _ammoType = "";
@@ -87,10 +93,13 @@ if (_factionParam == 7) then {
 	};
 
 	sleep 2;
-	_gunner doArtilleryFire [_targetPos, _ammoType, 3];
-
-	diag_log format ["DynBulwarks: enemyRocketStrike — mortar: %1, ammo: %2", _mortarClass, _ammoType];
-	["SpecialWarning", ["INCOMING MORTAR FIRE! Take cover!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	diag_log format ["DynBulwarks: enemyRocketStrike — mortar: %1, gunnerNull=%2, ammo=%3", _mortarClass, isNull _gunner, _ammoType];
+	if (!isNull _gunner) then {
+		_gunner doArtilleryFire [_targetPos, _ammoType, 3];
+		["SpecialWarning", ["INCOMING MORTAR FIRE! Take cover!"]] remoteExec ["BIS_fnc_showNotification", 0];
+	} else {
+		diag_log "DynBulwarks: enemyRocketStrike — mortar gunner is null, no fire";
+	};
 
 	[_mortar, _mortarGroup] spawn {
 		params ["_m", "_g"];
