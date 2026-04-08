@@ -15,12 +15,15 @@ while {true} do {
     sleep (20 + random 30);
 
     // Skip during build phase — no hostiles active
-    if (bulwarkBox getVariable ["buildPhase", true]) then { continue };
+    if (bulwarkBox getVariable ["buildPhase", true]) then {
+        // no-op, wait for next tick
+    } else {
 
     private _allHCs = entities "HeadlessClient_F";
     private _allHPs = allPlayers - _allHCs;
     private _alivePlayers = _allHPs select { alive _x };
-    if (count _alivePlayers == 0) then { continue };
+
+    if (count _alivePlayers > 0) then {
 
     // Find EAST infantry on foot that have a launcher loaded
     private _rpgUnits = allUnits select {
@@ -29,7 +32,8 @@ while {true} do {
         secondaryWeapon _x != "" &&
         isNull objectParent _x
     };
-    if (count _rpgUnits == 0) then { continue };
+
+    if (count _rpgUnits > 0) then {
 
     // Shuffle and cap at 2 so we don't fire every RPG at once
     _rpgUnits = _rpgUnits call BIS_fnc_arrayShuffle;
@@ -54,7 +58,10 @@ while {true} do {
             _unit selectWeapon _launcher;
             _unit doTarget _nearestPlayer;
             _unit commandFire _nearestPlayer;
-            diag_log format ["DynBulwarks: enemyRPGvsInfantry — unit %1 firing %2 at player (dist=%3m)", _unit, _launcher, round _nearestDist];
         };
     };
+
+    }; // rpgUnits > 0
+    }; // alivePlayers > 0
+    }; // not build phase
 };
