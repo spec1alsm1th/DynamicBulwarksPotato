@@ -137,4 +137,5 @@ diag_log format ["DynBulwarks: initServer — spawning child scripts (MISSION_WE
 [] execVM "hostiles\clearStuck.sqf";
 //[] execVM "hostiles\solidObjects.sqf";
 [] execVM "hostiles\moveHosToPlayer.sqf";
+[] execVM "hostiles\enemyRPGvsInfantry.sqf";
 diag_log "DynBulwarks: initServer — complete";
