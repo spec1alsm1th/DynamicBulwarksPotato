@@ -33,8 +33,9 @@ private _vipClass = switch (_factionParam) do {
 if !(isClass (configFile >> "CfgVehicles" >> _vipClass)) then { _vipClass = "B_officer_F"; };
 if !(isClass (configFile >> "CfgVehicles" >> _vipClass)) then { _vipClass = "B_Soldier_F"; };
 
-// Spawn position 150–350m from bulwark
-private _vipPos = [bulwarkCity, 150, 350, 5, 0, 10, 0] call BIS_fnc_findSafePos;
+// Spawn position 150–350m from bulwark (waterMode=1 land only, flatRadius=0 skip flatness check)
+private _vipPos = [bulwarkCity, 150, 350, 1, 0, 0, 0] call BIS_fnc_findSafePos;
+if (count _vipPos < 2) then { _vipPos = bulwarkCity; };
 private _vipX = _vipPos select 0;
 private _vipY = _vipPos select 1;
 
@@ -64,7 +65,7 @@ for "_i" from 0 to (_guardCount - 1) do {
 	(waveUnits select 0) pushBack _guard;
 };
 
-// Map marker
+// Map marker (createMarker is global when called from server)
 createMarker ["vipMarker", _vipPos];
 "vipMarker" setMarkerType "mil_medic";
 "vipMarker" setMarkerColor "ColorGreen";

@@ -222,7 +222,7 @@ class Params
 		title = "Extra hostiles per player";
 		values[] = {50, 100, 150, 200};
 		texts[] = {"0.5", "1", "1.5", "2"};
-		default = 50;
+		default = 100;
 	};
 
 	class PISTOL_HOSTILES
