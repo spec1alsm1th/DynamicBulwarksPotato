@@ -1,8 +1,8 @@
 _object  = _this select 0;
-_isHeld = _object getVariable "buildItemHeld";
 _loopCount = 0;
 _foundAIArr = [];
-while {!(_object isEqualTo objNull) && !_isHeld} do {
+// Re-check held state every tick — the loop must stop when a player picks the object back up
+while {!isNull _object && !(_object getVariable ["buildItemHeld", false])} do {
     if (_loopcount >= 20) then {
         _loopCount = 0;
         _foundAIArr = [];
@@ -10,7 +10,6 @@ while {!(_object isEqualTo objNull) && !_isHeld} do {
     _loopCount = _loopCount + 1;
     _objRadius = (_object getVariable "Radius") + 1;
     _nearAI = _object nearEntities _objRadius;
-    _isPlaced = _object getVariable "buildItemHeld";
     {
       if (suicideWave && (alive _x) && (side _x == east)) then {
         _x setDamage 1;
@@ -21,7 +20,7 @@ while {!(_object isEqualTo objNull) && !_isHeld} do {
           _x disableAI "MOVE";
           _aiDir = _object getDir _x;
           _x setDir _aiDir;
-          _aiGoToPos = _object getRelPos [random [-10,0,-10], _aiDir];
+          _aiGoToPos = _object getRelPos [random [-10,0,10], _aiDir];
           _x setBehaviour "CARELESS";
           _x setUnitPos "UP";
           _x playActionNow "FastF";
