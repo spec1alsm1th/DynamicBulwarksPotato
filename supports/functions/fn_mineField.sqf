@@ -10,7 +10,7 @@ _player = _this select 0;
 _targetPos = _this select 1;
 
 if (count _targetPos == 0) then {
-  [player, "mineField"] call BIS_fnc_addCommMenuItem;
+  [_player, "mineField"] remoteExec ["BIS_fnc_addCommMenuItem", _player]; // refund if aimed at sky
 }else{
   _smoker = "SmokeShellGreen" createVehicle [_targetPos select 0, _targetPos select 1, 10];
   _smoker setVelocity [0,0,-100];
