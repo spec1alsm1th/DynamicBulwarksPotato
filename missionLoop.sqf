@@ -1,3 +1,8 @@
+// Loop generation token — a newer missionLoop instance supersedes any older one
+// (fn_restartLoop starts a new instance while the old one may still be sleeping in endWave)
+MISSION_LOOP_ID = if (isNil "MISSION_LOOP_ID") then { 0 } else { MISSION_LOOP_ID + 1 };
+private _loopId = MISSION_LOOP_ID;
+
 {
 	[_x, false] remoteExec ["setUnconscious", 0];
 	_x action ["CancelAction", _x];
@@ -39,7 +44,7 @@ bulwarkBox setVariable ["buildPhase", true, true];
 
 [west, RESPAWN_TICKETS] call BIS_fnc_respawnTickets;
 
-while {runMissionLoop} do {
+while {runMissionLoop && MISSION_LOOP_ID == _loopId} do {
 
 	//Reset the AI position checks
 	AIstuckcheck = 0;
@@ -59,7 +64,7 @@ while {runMissionLoop} do {
 	private _lastEastCount = EAST countSide allUnits;
 	private _staleTimer = 0;
 
-	while {runMissionLoop} do {
+	while {runMissionLoop && MISSION_LOOP_ID == _loopId} do {
 
 		sleep 1;
 
@@ -123,6 +128,11 @@ while {runMissionLoop} do {
 
 	if(missionFailure) exitWith {};
 
+	// A newer missionLoop instance has taken over — bail out without touching endWave
+	if (MISSION_LOOP_ID != _loopId) exitWith {
+		diag_log format ["DynBulwarks: missionLoop — instance %1 superseded by %2, exiting", _loopId, MISSION_LOOP_ID];
+	};
+
 	if (_maxWaves > 0 && {attkWave >= _maxWaves}) exitWith {
 		diag_log format ["DynBulwarks: missionLoop — max waves reached (%1), ending mission (End2)", attkWave];
 		"End2" call BIS_fnc_endMissionServer;
@@ -140,8 +150,9 @@ while {runMissionLoop} do {
 
 };
 
-// If we reach here outside of a normal exit (missionFailure / maxWaves), the loop died unexpectedly
-if (!missionFailure && runMissionLoop) then {
+// If we reach here outside of a normal exit (missionFailure / maxWaves / superseded by
+// a newer loop instance), the loop died unexpectedly
+if (!missionFailure && runMissionLoop && MISSION_LOOP_ID == _loopId) then {
 	private _msg = format ["MISSION LOOP ALERT: main while-loop exited unexpectedly on wave %1! runMissionLoop=%2, missionFailure=%3", attkWave, runMissionLoop, missionFailure];
 	diag_log ("DynBulwarks: " + _msg);
 	["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];
