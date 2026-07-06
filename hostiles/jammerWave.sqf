@@ -14,8 +14,13 @@ private _guardClass = if (count List_OPFOR > 0) then { selectRandom List_OPFOR }
 private _jammerPos = [bulwarkCity, 15, (BULWARK_RADIUS * 0.8) max 40, 5, 0, 0, 0] call BIS_fnc_findSafePos;
 if (count _jammerPos < 2) then { _jammerPos = bulwarkCity vectorAdd [30, 0, 0]; };
 
-// Jammer prop — BTR-50 signals vehicle; players must destroy it
-private _jammerObj = createVehicle ["vn_o_armor_btr50pk_02", _jammerPos, [], 0, "CAN_COLLIDE"];
+// Jammer prop — BTR-50 signals vehicle; players must destroy it.
+// Fall back to a vanilla radar truck if SOG Prairie Fire is not loaded — otherwise
+// createVehicle fails and jammerActive would stay true forever (supports jammed)
+private _jammerClass = "vn_o_armor_btr50pk_02";
+if !(isClass (configFile >> "CfgVehicles" >> _jammerClass)) then { _jammerClass = "O_Radar_System_02_F"; };
+if !(isClass (configFile >> "CfgVehicles" >> _jammerClass)) then { _jammerClass = "O_Truck_03_device_F"; };
+private _jammerObj = createVehicle [_jammerClass, _jammerPos, [], 0, "CAN_COLLIDE"];
 _jammerObj allowDamage true;
 _jammerObj lock 2;
 mainZeus addCuratorEditableObjects [[_jammerObj], true];
