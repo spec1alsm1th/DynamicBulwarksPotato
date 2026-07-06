@@ -21,7 +21,7 @@ while {true} do {
             [_p, false] remoteExec ["setUnconscious", 0];
             ["#rev", 1, _p] remoteExecCall ["BIS_fnc_reviveOnState", _p];
             _p switchMove "PlayerStand";
-            _p removeItem _medikitClass;
+            [_p, _medikitClass] remoteExec ["removeItem", _p]; // removeItem needs the unit local
             [_p] remoteExec ["bulwark_fnc_revivePlayer", 2];
             _p setVariable ["RevByMedikit", false, true];
           } else {
