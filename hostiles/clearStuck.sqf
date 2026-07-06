@@ -19,7 +19,10 @@ while {true} do {
             nearestPlayerPos = getPos _x;
           };
         } forEach _allHPs;
-        AIStuckCheckArray pushBack [_x, nearestPlayerDistance, nearestPlayerPos];
+        // Only record when a player was actually found — nearestPlayerPos is undefined otherwise
+        if (nearestPlayerDistance < 9999) then {
+          AIStuckCheckArray pushBack [_x, nearestPlayerDistance, nearestPlayerPos];
+        };
       };
     } forEach allUnits;
   };

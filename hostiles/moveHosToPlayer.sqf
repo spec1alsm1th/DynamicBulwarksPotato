@@ -45,21 +45,25 @@ While {true} do {
         };
       } forEach _aiTargets;
 
-      //Move inft to within 15 meters of player and move Armor to 15 - 55 meters of player
-      _playerPos = getPos goToPlayer;
-      _doMovePos = getPos goToPlayer;
-      if (isNull objectParent thisNPC) then {
-        _doMovePos = [goToPlayer, 1, 15] call BIS_fnc_findSafePos;
-        _doMovePos = [_doMovePos select 0, _doMovePos select 1, _playerPos select 2];
-      }else{
-        if (suicideWave) then {
-          _doMovePos = getPos goToPlayer;
+      // Only issue a move order when a valid target was found this pass —
+      // otherwise goToPlayer would be undefined (or stale) when all players are down
+      if (count _aiTargets > 0) then {
+        //Move inft to within 15 meters of player and move Armor to 15 - 55 meters of player
+        _playerPos = getPos goToPlayer;
+        _doMovePos = getPos goToPlayer;
+        if (isNull objectParent thisNPC) then {
+          _doMovePos = [goToPlayer, 1, 15] call BIS_fnc_findSafePos;
+          _doMovePos = [_doMovePos select 0, _doMovePos select 1, _playerPos select 2];
         }else{
-          _doMovePos = [goToPlayer, 15, 55, 0.5, 0, 30] call BIS_fnc_findSafePos;
-          _doMovePos = [_doMovePos select 0, _doMovePos select 1, 0];
+          if (suicideWave) then {
+            _doMovePos = getPos goToPlayer;
+          }else{
+            _doMovePos = [goToPlayer, 15, 55, 0.5, 0, 30] call BIS_fnc_findSafePos;
+            _doMovePos = [_doMovePos select 0, _doMovePos select 1, 0];
+          };
         };
+        thisNPC doMove _doMovePos;
       };
-      thisNPC doMove _doMovePos;
     };
   } foreach allUnits;
   sleep 15;
