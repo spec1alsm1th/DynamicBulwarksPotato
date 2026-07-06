@@ -1,10 +1,10 @@
 _wave = attkWave;
 
-_allHCs = entities "HeadlessClient_F";
-_allHPs = allPlayers - _allHCs;
-
 //Kill Hostile AI if they get too close to player. Event for explosion assigned to AI in spawnSquad.sqf
 while {_wave == attkWave} do {
+  // Refresh each pass so players who respawn/join mid-wave are included
+  _allHCs = entities "HeadlessClient_F";
+  _allHPs = allPlayers - _allHCs;
   {
     if (side _x == east) then {
       _thisAI = _x;
@@ -15,4 +15,5 @@ while {_wave == attkWave} do {
       } forEach _allHPs;
     };
   } foreach allUnits;
+  sleep 0.5;
 };
