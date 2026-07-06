@@ -20,6 +20,7 @@ if (count _targetPos == 0) then {
 	private _result = [_spawnPos, 0, "B_Mortar_01_F", _mortarGroup] call BIS_fnc_spawnVehicle;
 	private _mortar = _result select 0;
 	private _gunner = gunner _mortar;
+	if (isNull _gunner) then { _gunner = driver _mortar; };
 
 	// Use whatever ammo the mortar spawns with; add vanilla rounds as fallback
 	private _ammoType = "";
@@ -29,9 +30,14 @@ if (count _targetPos == 0) then {
 		_ammoType = "3Rnd_82mm_Mo_shells";
 	};
 
-	_gunner doArtilleryFire [_targetPos, _ammoType, 8];
-
-	["TaskAssigned", ["FIRE FOR EFFECT!", "Artillery barrage inbound on target."]] remoteExec ["BIS_fnc_showNotification", 0];
+	// Gunner AI needs a moment after BIS_fnc_spawnVehicle before it can take fire orders
+	sleep 2;
+	if (!isNull _gunner) then {
+		_gunner doArtilleryFire [_targetPos, _ammoType, 8];
+		["TaskAssigned", ["FIRE FOR EFFECT!", "Artillery barrage inbound on target."]] remoteExec ["BIS_fnc_showNotification", 0];
+	} else {
+		diag_log "DynBulwarks: artilleryBarrage — mortar gunner is null, no fire";
+	};
 
 	// Clean up after barrage
 	[_mortar, _mortarGroup] spawn {
