@@ -12,18 +12,17 @@ player addEventHandler ["HandleDamage", {
   if (lifeState player == "INCAPACITATED" || _beingRevived || ((_this select 3) in _players && !TEAM_DAMAGE && !((_this select 3) isEqualTo player))) then {
       0
   } else {
-    if (_incDamage >= 0.9) then {
-      _playerItems = items player;
-      if ("Medikit" in _playerItems) then {
-        player removeItem "Medikit";
-        player setVariable ["RevByMedikit", true, true];
-        player playActionNow "agonyStart";
-        player playAction "agonyStop";
-        player setDamage 0;
-        [player] remoteExec ["bulwark_fnc_revivePlayer", 2];
-        0;
-      };
+    if (_incDamage >= 0.9 && {"Medikit" in items player}) then {
+      player removeItem "Medikit";
+      player setVariable ["RevByMedikit", true, true];
+      player playActionNow "agonyStart";
+      player playAction "agonyStop";
+      player setDamage 0;
+      [player] remoteExec ["bulwark_fnc_revivePlayer", 2];
+      0;
     } else {
+      // No medikit save — always route through the revive handler so heavy
+      // hits incapacitate instead of killing outright
       _this call bis_fnc_reviveEhHandleDamage;
     };
   };
