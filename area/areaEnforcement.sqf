@@ -20,7 +20,7 @@ while {true} do {
                     (bulwarkCity select 1) + _pushDist * cos _dir,
                     0
                 ];
-                _x setPosASL _newLoc;
+                _x setPos _newLoc; // setPos places at ground level; setPosASL with z=0 would put players at sea level
                 [_x, "teleportHit"] remoteExec ["sound_fnc_say3DGlobal", 0];
                 ["DynamicBlur", 200, [10]] remoteExec ["area_fnc_createBlur", _x];
             };
@@ -40,5 +40,5 @@ while {true} do {
         };
     } foreach _allHPs;
 
-    sleep 0.01;
+    sleep 0.5;
 };
