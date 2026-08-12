@@ -22,14 +22,12 @@ waitUntil { scriptDone _hConfig };
 diag_log "DynBulwarks: initServer — editMe.sqf done";
 
 // Wait for host/admin to pick bulwark position (only needed when using List_SpecificPoint)
-if (("SELECT_BULWARK_LOCATION" call BIS_fnc_getParamValue) == 1) then {
-    diag_log "DynBulwarks: initServer — waiting for bulwark position";
-    private _t0 = time;
-    waitUntil {
-        ((DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) ) || ((time - _t0) > 300)
-    };
-    diag_log format ["DynBulwarks: initServer — bulwark pos wait done (DB_specBulwarkPos=%1, elapsed=%2s)", DB_specBulwarkPos, round (time - _t0)];
+diag_log "DynBulwarks: initServer — waiting for bulwark position";
+private _t0 = time;
+waitUntil {
+    ((DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) ) || ((time - _t0) > 300)
 };
+diag_log format ["DynBulwarks: initServer — bulwark pos wait done (DB_specBulwarkPos=%1, elapsed=%2s)", DB_specBulwarkPos, round (time - _t0)];
 
 if (DB_specBulwarkPos isEqualType [] && {count DB_specBulwarkPos == 3}) then {
     private _pos = DB_specBulwarkPos;

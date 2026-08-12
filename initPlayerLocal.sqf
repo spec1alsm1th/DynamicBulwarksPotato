@@ -32,7 +32,7 @@ player setVariable ["killPoints", _killPoints, true];
 
 hitMarkers = [];
 
-if (("SELECT_BULWARK_LOCATION" call BIS_fnc_getParamValue) == 1 && {isServer || serverCommandAvailable "#kick"}) then {
+if (isServer || serverCommandAvailable "#kick") then {
     [] execVM "pickBulwarkPos.sqf";
 };
 

@@ -417,14 +417,6 @@ class Params
 		default = 0;
 	};
 
-	class SELECT_BULWARK_LOCATION
-	{
-		title = "Select Bulwark location on map before mission";
-		values[] = {0, 1};
-		texts[] = {"No - random city location", "Yes - host/admin selects location"};
-		default = 0;
-	};
-
 	class BULWARK_RADIUS
 	{
 		title = "Mission area size";
@@ -534,7 +526,7 @@ class Params
 		title = "Points per kill";
 		values[] = {10, 50, 100, 150, 200, 300};
 		texts[] = {"10","50","100","150","200","300"};
-		default = 10;
+		default = 100;
 	};
 
 	class SCORE_HIT
@@ -542,7 +534,7 @@ class Params
 		title = "Points per hit";
 		values[] = {0, 10, 20, 50, 100};
 		texts[] = {"0","10","20","50","100"};
-		default = 0;
+		default = 20;
 	};
 
 	class SCORE_DAMAGE_BASE
@@ -550,7 +542,7 @@ class Params
 		title = "Damage bonus points";
 		values[] = {0, 10, 20, 50, 100};
 		texts[] = {"0","10","20","50","100"};
-		default = 0;
+		default = 20;
 	};
 
 	class PARATROOP_COUNT
