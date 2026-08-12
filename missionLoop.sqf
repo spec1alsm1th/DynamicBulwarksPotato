@@ -60,10 +60,6 @@ while {runMissionLoop && MISSION_LOOP_ID == _loopId} do {
 		["SpecialWarning", [_msg]] remoteExec ["BIS_fnc_showNotification", 0];
 	};
 
-	// Staleness failsafe: track last EAST count and time to detect units stuck underground
-	private _lastEastCount = EAST countSide allUnits;
-	private _staleTimer = 0;
-
 	while {runMissionLoop && MISSION_LOOP_ID == _loopId} do {
 
 		sleep 1;
@@ -74,21 +70,6 @@ while {runMissionLoop && MISSION_LOOP_ID == _loopId} do {
 
 		//Check if all hostiles dead (jammer wave: keep wave alive until jammer is destroyed)
 		if (EAST countSide allUnits == 0 && {isNil "jammerActive" || {!jammerActive}}) exitWith {};
-
-		// Staleness failsafe: if EAST count hasn't changed for 10 minutes, kill remaining units
-		// (handles units clipped underground or otherwise inaccessible to Zeus/players)
-		private _currentEastCount = EAST countSide allUnits;
-		if (_currentEastCount < _lastEastCount) then {
-			_lastEastCount = _currentEastCount;
-			_staleTimer = 0;
-		} else {
-			_staleTimer = _staleTimer + 1;
-			if (_staleTimer >= 600) then {
-				diag_log format ["DynBulwarks: Staleness failsafe triggered — %1 EAST unit(s) stuck for 10 minutes, force-removing", _currentEastCount];
-				{ if (side _x == east && alive _x) then { _x setDamage 1; }; } forEach allUnits;
-				_staleTimer = 0;
-			};
-		};
 
 		//check if all players dead or unconscious
 		_deadUnconscious = [];

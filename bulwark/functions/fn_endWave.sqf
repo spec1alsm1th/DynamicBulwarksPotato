@@ -50,7 +50,19 @@ MIND_CONTROLLED_AI = [];
 publicVariable "MIND_CONTROLLED_AI";
 
 diag_log format ["DynBulwarks: endWave — sleeping %1s (build phase)", _downTime];
-sleep _downTime;
+// Interruptible build phase: players can end it early with the free
+// "Force Next Wave" support (see fn_skipWave). Clear the flag first so a
+// force from a previous round cannot leak into this one.
+BULWARK_FORCE_NEXT_WAVE = false;
+private _elapsed = 0;
+while {_elapsed < _downTime && !BULWARK_FORCE_NEXT_WAVE} do {
+	sleep 1;
+	_elapsed = _elapsed + 1;
+};
+if (BULWARK_FORCE_NEXT_WAVE) then {
+	diag_log format ["DynBulwarks: endWave — build phase forced short at %1s of %2s", _elapsed, _downTime];
+};
+BULWARK_FORCE_NEXT_WAVE = false;
 diag_log "DynBulwarks: endWave — build phase over";
 
 BULWARK_ENDWAVE_OK = true;

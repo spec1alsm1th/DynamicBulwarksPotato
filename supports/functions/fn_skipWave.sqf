@@ -1,21 +1,28 @@
 /**
 *  fn_skipWave
 *
-*  Kills all remaining EAST units and vehicles, ending the current wave
-*  immediately. Free support — no cost — available to all players.
+*  "Force Next Wave" — free support, no cost, available to all players.
+*
+*  During an active wave: kills all remaining EAST units and vehicles so the
+*  wave ends immediately.
+*  During the build phase: cuts the DOWN_TIME countdown short so the next
+*  wave starts immediately (see fn_endWave).
 *
 *  Domain: Server
 **/
 
 params ["_player"];
 
-// Only valid during an active wave
+private _playerName = name _player;
+
+// Build phase — cut the remaining build time short instead of killing units
 if (bulwarkBox getVariable ["buildPhase", false]) exitWith {
-    ["Wave is not active — nothing to skip."] remoteExec ["hint", _player];
+    diag_log format ["DynBulwarks: forceNextWave (build phase) triggered by %1", _playerName];
+    BULWARK_FORCE_NEXT_WAVE = true;
+    ["SpecialWarning", [format ["%1 called in the next wave early!", _playerName]]] remoteExec ["BIS_fnc_showNotification", 0];
 };
 
-private _playerName = name _player;
-diag_log format ["DynBulwarks: skipWave triggered by %1", _playerName];
+diag_log format ["DynBulwarks: forceNextWave (active wave) triggered by %1", _playerName];
 
 ["SpecialWarning", [format ["%1 called in a wave skip!", _playerName]]] remoteExec ["BIS_fnc_showNotification", 0];
 

@@ -109,7 +109,7 @@ BULWARK_SUPPORTITEMS = [
     [4690, "Rage Stimpack",         "ragePack"],
     [5000, "Tank Support",       "tankSupport"],
     [5500, "Bomb Strike",         "bombStrike"],
-    [0,    "Skip Wave",         "skipWave"],
+    [0,    "Force Next Wave",   "skipWave"],
     [0,    "Restart Wave",   "restartLoop"]
 ];
 

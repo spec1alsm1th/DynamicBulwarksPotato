@@ -5,6 +5,14 @@ _distFromBulwark = "BULWARK_RADIUS" call BIS_fnc_getParamValue;
 
 //Create array of all Civ classes
 _civSide = 3;
+// On SOG PF (Cam Lao Nam) restrict the pool to era-appropriate villagers.
+// Other factions keep the unrestricted pool.
+private _factionParam = ["HOSTILE_FACTION", 0] call BIS_fnc_getParamValue;
+private _eraPrefix = if (_factionParam == 7) then { "vn_c_" } else { "" };
+
+// Unfiltered pool, kept as a fallback if the era filter matches nothing
+private _allCivClasses = [];
+
 _cfgVehiclesConfig = configFile >> "CfgVehicles";
 _cfgVehiclesConfigCount = count _cfgVehiclesConfig;
 for [{_i = 0}, {_i < _cfgVehiclesConfigCount}, {_i = _i + 1}] do
@@ -16,15 +24,34 @@ for [{_i = 0}, {_i < _cfgVehiclesConfigCount}, {_i = _i + 1}] do
     if (_typeMan != 0) then
     {
       _side = getNumber (_config >> "side");
-      if (_side == _civSide) then
+      // scope 2 = public class; base/private classes are not spawnable
+      if (_side == _civSide && {getNumber (_config >> "scope") == 2}) then
       {
-        civClassArr set [count civClassArr, configName _config];
+        // Drop armed civilians — "Throw"/"Put" are the harmless grenade/mine slots
+        private _weapons = (getArray (_config >> "weapons")) - ["Throw", "Put"];
+        if (count _weapons == 0) then
+        {
+          private _className = configName _config;
+          _allCivClasses pushBack _className;
+          if (_eraPrefix == "" || {_className select [0, count _eraPrefix] == _eraPrefix}) then
+          {
+            civClassArr pushBack _className;
+          };
+        };
       }
     }
   };
 };
 
-if (count civClassArr == 0) then { civClassArr = ["C_man_1"]; };
+if (count civClassArr == 0) then {
+  diag_log format ["DynBulwarks: civWave — no civilians matched era prefix '%1', falling back to unfiltered pool", _eraPrefix];
+  civClassArr = _allCivClasses;
+};
+if (count civClassArr == 0) then {
+  diag_log "DynBulwarks: civWave — no civilian classes found at all, falling back to C_man_1";
+  civClassArr = ["C_man_1"];
+};
+diag_log format ["DynBulwarks: civWave — %1 civilian class(es) in pool (faction=%2, prefix='%3')", count civClassArr, _factionParam, _eraPrefix];
 if (count lootHouses == 0) exitWith {
   diag_log "DynBulwarks: civWave — no lootHouses, skipping civilian spawn";
 };

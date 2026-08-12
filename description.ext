@@ -310,7 +310,7 @@ class Params
 		title = "Hostage Rescue - one player taken hostage, others must rescue";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 1;
+		default = 0;
 	};
 
 	class HOSTAGE_TIMER
@@ -326,7 +326,7 @@ class Params
 		title = "Airborne Assault - enemy forces arrive by helicopter and parachute instead of on foot";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 1;
+		default = 0;
 	};
 
 	class BOMB_WAVE
@@ -334,7 +334,7 @@ class Params
 		title = "Bomb Defusal - a bomb is planted in the Bulwark, defuse it with a ToolKit";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 1;
+		default = 0;
 	};
 
 	class BOMB_TIMER
@@ -350,7 +350,7 @@ class Params
 		title = "SIGINT Jammer - enemy jammer disables supports until destroyed (wave 10+)";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 1;
+		default = 0;
 	};
 
 	class VIP_WAVE
@@ -358,7 +358,7 @@ class Params
 		title = "VIP Extraction - rescue a stranded friendly officer and escort them back (wave 10+)";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 1;
+		default = 0;
 	};
 
 	class AMMO_HEIST_WAVE
@@ -366,7 +366,7 @@ class Params
 		title = "Ammunition Heist - steal an enemy supply truck and drive it to the Bulwark (wave 10+)";
 		values[] = {0, 1};
 		texts[] = {"Disabled", "Enabled"};
-		default = 1;
+		default = 0;
 	};
 
 	class ARMOUR_START_WAVE
