@@ -35,7 +35,7 @@ if (!SUPPORTMENU) then {
 		_satSupport = _this select 0;
 		_player = _this select 1;
 		[_satSupport] remoteExec ['removeAllActions', 0];
-		_pointsMulti = ('SCORE_KILL' call BIS_fnc_getParamValue);
+		_satPoints = ('SAT_UNLOCK_POINTS' call BIS_fnc_getParamValue);
 		if (!SUPPORTMENU) then {
 			['TaskAssigned',['Support','Support Menu Unlocked at Bulwark Box']] remoteExec ['BIS_fnc_showNotification', 0];
 			['comNoise'] remoteExec ['playSound', 0];
@@ -43,7 +43,9 @@ if (!SUPPORTMENU) then {
 		SUPPORTMENU = true;
 		publicVariable 'SUPPORTMENU';
 		SatUnlocks = missionNamespace getVariable 'SatUnlocks';
-		[_player, (20 * _pointsMulti)] remoteExecCall ['killPoints_fnc_add', 2];
+		if (_satPoints > 0) then {
+			[_player, _satPoints] remoteExecCall ['killPoints_fnc_add', 2];
+		};
 		{
 			[_x] remoteExec ['deleteVehicle', 2];
 		} forEach SatUnlocks;

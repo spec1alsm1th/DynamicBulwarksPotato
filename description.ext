@@ -521,6 +521,22 @@ class Params
 		default = 1;
 	};
 
+	class SAT_UNLOCK_POINTS
+	{
+		title = "Points awarded for finding the Satellite Dish";
+		values[] = {0, 500, 1000, 2000, 5000};
+		texts[] = {"0", "500", "1000", "2000", "5000"};
+		default = 1000;
+	};
+
+	class MONEY_PICKUP_POINTS
+	{
+		title = "Points awarded for the Collect Points pickup";
+		values[] = {0, 500, 1000, 2000, 5000};
+		texts[] = {"0", "500", "1000", "2000", "5000"};
+		default = 2000;
+	};
+
 	class SCORE_KILL
 	{
 		title = "Points per kill";
