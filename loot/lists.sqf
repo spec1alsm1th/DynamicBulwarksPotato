@@ -126,6 +126,24 @@ for "_x" from 0 to (_count-1) do {
     };
 };
 
+// Some factions ship no wearable backpacks at all — NFCW's Sipuli packs are all
+// scope = 1, so a filtered scan returns nothing and LOOT_STORAGE_POOL (editMe.sqf)
+// would end up empty, leaving players unable to find any backpack. Fall back to an
+// unfiltered scan rather than shipping an empty list.
+if (count _backpacks == 0) then {
+    diag_log "DynBulwarks: no backpacks passed the loot filter, falling back to unfiltered backpacks";
+    _count = count (configFile >> "CfgVehicles");
+    for "_x" from 0 to (_count-1) do {
+        _item = ((configFile >> "CfgVehicles") select _x);
+        if (isClass _item) then {
+            if (getnumber (_item >> "scope") == 2 && {gettext (_item >> "vehicleClass") == "Backpacks"}) then {
+                _backpacks = _backpacks + [configname _item];
+            };
+        };
+    };
+    diag_log format ["DynBulwarks: unfiltered backpack fallback found %1 backpacks", count _backpacks];
+};
+
 _count =  count (configFile >> "CfgGlasses");
 for "_x" from 0 to (_count-1) do {
     _item=((configFile >> "CfgGlasses") select _x);
