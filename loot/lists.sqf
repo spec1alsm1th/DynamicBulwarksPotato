@@ -43,16 +43,19 @@ private _passesLootFilter = switch (_lootFactionParam) do {
     case 5: { { (toLower (configName _this) select [0,3]) == "vn_" } };
     case 6: { { (toLower (configName _this) select [0,5]) == "csla_" } };
     case 8: {
-        // Northern Fronts CW (friendly) + RHS (enemy). NFCW gear does not share a
-        // leading prefix — uniforms are U_NFCW_*, vests V_NFCW_*, weapons NFCW_* —
-        // so this matches the token anywhere in the classname rather than at the start.
-        {
-            private _n = toLower (configName _this);
-            ((_n find "nfcw") >= 0) || {(_n select [0,3]) == "rhs"}
-        }
+        // Northern Fronts CW only. NFCW gear does not share a leading prefix —
+        // uniforms are U_NFCW_*, vests V_NFCW_*, weapons NFCW_* — so this matches
+        // the token anywhere in the classname rather than at the start.
+        { ((toLower (configName _this)) find "nfcw") >= 0 }
     };
     default { { true } };
 };
+
+// Whether enemies get re-armed from the loot pool (spawnInfantry, spawnSquad,
+// airborneWave, specSwticharooWave). Normally on whenever loot is filtered, so
+// enemy weapons match the loot theme. Disabled for case 8: world loot is Finnish,
+// but the Russians keep their own RHS weapons rather than spawning with RK-62s.
+LOOT_REARM_ENEMIES = (_lootFactionParam != 0 && {_lootFactionParam != 8});
 
 diag_log format ["DynBulwarks: Loot faction filter = %1 (filterActive = %2)", _lootFactionParam, _filterLoot];
 

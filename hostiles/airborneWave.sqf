@@ -11,7 +11,7 @@
 private _factionParam = "HOSTILE_FACTION" call BIS_fnc_getParamValue;
 private _randWeapons = "RANDOM_WEAPONS" call BIS_fnc_getParamValue;
 private _lootFaction = "LOOT_FACTION" call BIS_fnc_getParamValue;
-private _replaceWeapons = (_randWeapons == 1 || _lootFaction != 0);
+private _replaceWeapons = (_randWeapons == 1 || {_lootFaction != 0 && {isNil "LOOT_REARM_ENEMIES" || {LOOT_REARM_ENEMIES}}});
 
 private _noOfPlayers = 1 max floor ((playersNumber west) * HOSTILE_TEAM_MULTIPLIER);
 

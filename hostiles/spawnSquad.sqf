@@ -8,7 +8,7 @@
 
 _randWeapons = "RANDOM_WEAPONS" call BIS_fnc_getParamValue;
 _lootFaction = "LOOT_FACTION" call BIS_fnc_getParamValue;
-_replaceWeapons = (_randWeapons == 1 || _lootFaction != 0);
+_replaceWeapons = (_randWeapons == 1 || {_lootFaction != 0 && {isNil "LOOT_REARM_ENEMIES" || {LOOT_REARM_ENEMIES}}});
 
 if (defectorWave) then { //determine if defect wave and spawn from List defined in EditMe.sqf
 	unitClasses = DEFECTOR_CLASS;

@@ -39,7 +39,7 @@ mainZeus addCuratorEditableObjects [[_unit], true];
 
 // Replace weapon with faction-appropriate one if loot faction filtering is active
 private _lootFaction = "LOOT_FACTION" call BIS_fnc_getParamValue;
-if (_lootFaction != 0) then {
+if (_lootFaction != 0 && {isNil "LOOT_REARM_ENEMIES" || {LOOT_REARM_ENEMIES}}) then {
 	_unitPrimaryWeap = primaryWeapon _unit;
 	_primaryAmmoTpyes = getArray (configFile >> "CfgWeapons" >> _unitPrimaryWeap >> "magazines");
 	{
