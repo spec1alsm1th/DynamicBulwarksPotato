@@ -209,5 +209,40 @@ List_Faces = [] + _faces;
 List_Grenades = [] + _grenades;
 List_Charges = [] + _charges;
 
+// Mines, grenades and charges are detected by English keywords in the displayName
+// ("mine", "grenade") or classname ("remote"). Factions that name their gear in
+// another language slip through: NFCW's only mine, NFCW_TM_65_77_Mag, displays as
+// "[FIN] TM 65 77". All three lists then come back empty, LOOT_EXPLOSIVE_POOL
+// (editMe.sqf) is empty, and spawnLoot.sqf's selectRandom returns nil — which
+// produced 54 "Undefined variable _explosive" errors per mission on faction 8.
+// Fall back to an unfiltered scan so explosives still spawn.
+if (count (List_Mines + List_Grenades + List_Charges) == 0) then {
+    diag_log "DynBulwarks: no mines/grenades/charges passed the loot filter, falling back to unfiltered explosives";
+    private _fbMines = [];
+    private _fbGrenades = [];
+    private _fbCharges = [];
+    private _fbChargeType = getText (configfile >> "CfgMagazines" >> "DemoCharge_Remote_Mag" >> "type");
+    private _cnt = count (configFile >> "CfgMagazines");
+    for "_i" from 0 to (_cnt-1) do {
+        private _item = ((configFile >> "CfgMagazines") select _i);
+        if (isClass _item) then {
+            private _dn = getText (_item >> "displayName");
+            if (getNumber (_item >> "value") == 5 && {["mine", _dn] call BIS_fnc_inString}) then {
+                _fbMines pushBack configName _item;
+            };
+            if (getText (_item >> "type") == _fbChargeType && {["remote", configName _item] call BIS_fnc_inString}) then {
+                _fbCharges pushBack configName _item;
+            };
+            if ((getNumber (_item >> "type") == 16 || {getNumber (_item >> "type") == 256}) && {["grenade", _dn] call BIS_fnc_inString} && {!(["smoke", _dn] call BIS_fnc_inString)}) then {
+                _fbGrenades pushBack configName _item;
+            };
+        };
+    };
+    List_Mines = _fbMines;
+    List_Grenades = _fbGrenades;
+    List_Charges = _fbCharges;
+    diag_log format ["DynBulwarks: unfiltered explosive fallback found %1 mines, %2 grenades, %3 charges", count List_Mines, count List_Grenades, count List_Charges];
+};
+
 List_AllWeapons = List_Primaries + List_Secondaries + List_Launchers;
 List_AllClothes = List_Hats + List_Uniforms + List_Glasses;

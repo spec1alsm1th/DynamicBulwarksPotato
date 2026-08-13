@@ -114,8 +114,12 @@ _roomCount = 0;
 								_lootHolder addBackpackCargoGlobal [_backpack, 1];
 							};
 							case 5: {
+								// selectRandom on an empty array returns nil - guard so an empty pool
+								// skips quietly instead of erroring once per loot position.
 								_explosive = selectRandom LOOT_EXPLOSIVE_POOL;
-								_lootHolder addMagazineCargoGlobal [_explosive, 1 + (floor random 3)];
+								if (!isNil "_explosive") then {
+									_lootHolder addMagazineCargoGlobal [_explosive, 1 + (floor random 3)];
+								};
 							};
 						};
 					};
@@ -145,8 +149,12 @@ _roomCount = 0;
 								_lootHolder addBackpackCargoGlobal [_backpack, 1];
 							};
 							case 5: {
+								// selectRandom on an empty array returns nil - guard so an empty pool
+								// skips quietly instead of erroring once per loot position.
 								_explosive = selectRandom LOOT_WHITELIST_EXPLOSIVE;
-								_lootHolder addMagazineCargoGlobal [_explosive, 1 + (floor random 3)];
+								if (!isNil "_explosive") then {
+									_lootHolder addMagazineCargoGlobal [_explosive, 1 + (floor random 3)];
+								};
 							};
 						};
 					};
