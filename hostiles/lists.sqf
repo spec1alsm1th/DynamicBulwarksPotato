@@ -361,6 +361,49 @@ if (count List_Viper == 0) then { diag_log "DynBulwarks: Viper list still empty,
 if (count List_INDEP == 0) then { diag_log "DynBulwarks: INDEP list empty, using vanilla fallback"; List_INDEP = call _vanillaINDEP; };
 if (count List_NATO == 0)  then { diag_log "DynBulwarks: NATO list empty, using vanilla fallback";  List_NATO  = call _vanillaNATO; };
 
+// Defectors keep the HOSTILE_FACTION-derived friendly models (e.g. RHS US Army when
+// HOSTILE_FACTION = RHS), so they still read as turncoats of the enemy's own war.
+// Captured BEFORE the friendly override below, which only affects paratroops.
+List_Defectors = List_NATO;
+
+// --- Friendly faction override (independent of HOSTILE_FACTION) ---
+// List_NATO drives PARATROOP_CLASS (editMe.sqf); DEFECTOR_CLASS now reads
+// List_Defectors instead. The friendly spawners use createGroup [WEST, true],
+// and createUnit inherits the group's side, so an Independent-side mod faction
+// still fights on the players' side.
+private _friendlyParam = ["FRIENDLY_FACTION", 0] call BIS_fnc_getParamValue;
+if (_friendlyParam != 0) then {
+    private _friendlyUnits = [];
+    switch (_friendlyParam) do {
+        case 1: {
+            // Northern Fronts Cold War — Finnish Defence Forces, summer only.
+            // Winter (_W) mirrors both eras exactly, so the fallback should never fire.
+            {
+                _x params ["_era", "_categories"];
+                private _pick = if (["Indep", _era] call _isFactionLoaded) then { _era } else { _era + "_W" };
+                if (["Indep", _pick] call _isFactionLoaded) then {
+                    if (_pick != _era) then { diag_log format ["DynBulwarks: NFCW summer era %1 missing, falling back to %2", _era, _pick]; };
+                    {
+                        private _catUnits = ["Indep", _pick, _x, ""] call _unitsFromFaction;
+                        { _friendlyUnits pushBackUnique _x } forEach _catUnits;
+                    } forEach _categories;
+                } else {
+                    diag_log format ["DynBulwarks: NFCW era %1 not found in CfgGroups (neither summer nor winter)", _era];
+                };
+            } forEach [
+                ["NFCW_80", ["Infantry", "InfantryBord", "InfantryLocal"]],
+                ["NFCW_88", ["Infantry"]]   // urban groups live in here
+            ];
+        };
+    };
+    if (count _friendlyUnits > 0) then {
+        List_NATO = _friendlyUnits;
+        diag_log format ["DynBulwarks: FRIENDLY_FACTION %1 -> %2 friendly units", _friendlyParam, count List_NATO];
+    } else {
+        diag_log format ["DynBulwarks: FRIENDLY_FACTION %1 produced no units, keeping default List_NATO (%2)", _friendlyParam, count List_NATO];
+    };
+};
+
 // Replace bandits/thugs with selected faction's regular infantry for non-vanilla factions
 // Early waves are still easier due to AI skill scaling and pistol-only enforcement
 if (_factionParam != 0) then {
@@ -369,7 +412,7 @@ if (_factionParam != 0) then {
     diag_log "DynBulwarks: Bandits replaced with faction infantry";
 };
 
-diag_log format ["DynBulwarks: List_Bandits=%1 List_OPFOR=%2 List_Viper=%3 List_INDEP=%4 List_NATO=%5", count List_Bandits, count List_OPFOR, count List_Viper, count List_INDEP, count List_NATO];
+diag_log format ["DynBulwarks: List_Bandits=%1 List_OPFOR=%2 List_Viper=%3 List_INDEP=%4 List_NATO=%5 List_Defectors=%6", count List_Bandits, count List_OPFOR, count List_Viper, count List_INDEP, count List_NATO, count List_Defectors];
 
 // Vehicle faction filter - uses LOOT_FACTION parameter
 private _vehFactionParam = ["LOOT_FACTION", 0] call BIS_fnc_getParamValue;

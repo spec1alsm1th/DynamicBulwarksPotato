@@ -201,6 +201,14 @@ class Params
 		default = 7;
 	};
 
+	class FRIENDLY_FACTION
+	{
+		title = "Friendly Faction - paratroop & land support (requires mod)";
+		values[] = {0, 1};
+		texts[] = {"Match enemy faction (default)", "Northern Fronts Cold War (FDF, summer)"};
+		default = 0;
+	};
+
 	class LOOT_FACTION
 	{
 		title = "Weapon, Gear & Vehicle Faction (requires DLC/mod)";

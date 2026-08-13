@@ -8,7 +8,7 @@
 
 /* Attacker Waves */
 
-// List_Bandits, List_ParaBandits, List_OPFOR, List_INDEP, List_NATO, List_Viper
+// List_Bandits, List_ParaBandits, List_OPFOR, List_INDEP, List_NATO, List_Viper, List_Defectors
 HOSTILE_LEVEL_1 = List_Bandits;  // Wave 0 >
 HOSTILE_LEVEL_2 = List_OPFOR;    // Wave 5 >
 HOSTILE_LEVEL_3 = List_Viper;    // Wave 10 >
@@ -80,8 +80,8 @@ LOOT_ROOM_DISTRIBUTION = ("LOOT_ROOM_DISTRIBUTION" call BIS_fnc_getParamValue); 
 LOOT_DISTRIBUTION_OFFSET = 0; // Offset the position by this number.
 LOOT_SUPPLYDROP = ("LOOT_SUPPLYDROP" call BIS_fnc_getParamValue) / 100;        // Radius of supply drop
 PARATROOP_COUNT = ("PARATROOP_COUNT" call BIS_fnc_getParamValue);
-PARATROOP_CLASS = List_NATO;
-DEFECTOR_CLASS = List_NATO;
+PARATROOP_CLASS = List_NATO;      // friendly reinforcements — follows FRIENDLY_FACTION
+DEFECTOR_CLASS = List_Defectors;  // turncoats — always follows HOSTILE_FACTION
 
 /* Points */
 SCORE_KILL = ("SCORE_KILL" call BIS_fnc_getParamValue);                 // Base Points for a kill
