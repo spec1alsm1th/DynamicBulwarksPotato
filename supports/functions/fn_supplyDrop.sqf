@@ -45,7 +45,11 @@ _waypoint1 setwaypointtype "Move";
 [_ag, 1] setWaypointBehaviour "CARELESS";
 
 sleep 4;
-_agVehicle animateDoor ['Door_1_source', 1];
+// Open whatever cargo door/ramp this aircraft has. animateDoor on a source the
+// model does not define is a silent no-op, so listing several is safe and keeps
+// ramp aircraft (e.g. the C-160 Transall, which uses lower_ramp/upper_ramp)
+// from dropping cargo through a visibly closed tail.
+{ _agVehicle animateDoor [_x, 1] } forEach ['Door_1_source', 'lower_ramp', 'upper_ramp', 'ramp_bottom', 'ramp_top'];
 waitUntil {supplyDropLatch};
 sleep 1.5;
 

@@ -692,4 +692,26 @@ if (_aircraftPrefix != "" && {_aircraftSide >= 0}) then {
         SUPPORT_AIRCRAFT = selectRandom _aircraft;
     };
 };
+// Friendly faction override. SUPPORT_AIRCRAFT otherwise follows HOSTILE_FACTION, so
+// with RHS enemies the supply drop and paratroops arrive in a random RHS transport.
+// NFCW has no transport of its own — its only aircraft are the Military Aviation
+// compat jets (BAe Hawk, Fouga Magister), neither of which carries cargo or troops.
+// Finland operated the Mi-8T from 1973, which fits the mod's 1980/1988 window.
+if (_friendlyParam == 1) then {
+    // C-160 Transall first: a Western Cold War tactical transport with a rear ramp,
+    // which suits an airdrop far better than a helicopter. Mi-8/Mi-17 as fallbacks —
+    // Finland operated the Mi-8T from 1973, so either fits the 1980/1988 window.
+    private _fdfTransports = ["sab_c160_b", "rhsgref_cdf_b_reg_Mi8amt", "rhsgref_cdf_b_reg_Mi17Sh"];
+    private _pick = "";
+    {
+        if (isClass (configFile >> "CfgVehicles" >> _x)) exitWith { _pick = _x; };
+    } forEach _fdfTransports;
+    if (_pick != "") then {
+        SUPPORT_AIRCRAFT = _pick;
+        diag_log format ["DynBulwarks: FRIENDLY_FACTION 1 - SUPPORT_AIRCRAFT overridden to %1", _pick];
+    } else {
+        diag_log format ["DynBulwarks: FRIENDLY_FACTION 1 - no Mi-8 class found, keeping %1", SUPPORT_AIRCRAFT];
+    };
+};
+
 diag_log format ["DynBulwarks: SUPPORT_AIRCRAFT=%1", SUPPORT_AIRCRAFT];
