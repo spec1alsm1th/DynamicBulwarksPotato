@@ -42,6 +42,15 @@ private _passesLootFilter = switch (_lootFactionParam) do {
     case 4: { { (toLower (configName _this) select [0,3]) == "gm_" } };
     case 5: { { (toLower (configName _this) select [0,3]) == "vn_" } };
     case 6: { { (toLower (configName _this) select [0,5]) == "csla_" } };
+    case 8: {
+        // Northern Fronts CW (friendly) + RHS (enemy). NFCW gear does not share a
+        // leading prefix — uniforms are U_NFCW_*, vests V_NFCW_*, weapons NFCW_* —
+        // so this matches the token anywhere in the classname rather than at the start.
+        {
+            private _n = toLower (configName _this);
+            ((_n find "nfcw") >= 0) || {(_n select [0,3]) == "rhs"}
+        }
+    };
     default { { true } };
 };
 

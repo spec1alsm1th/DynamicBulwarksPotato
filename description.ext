@@ -212,8 +212,8 @@ class Params
 	class LOOT_FACTION
 	{
 		title = "Weapon, Gear & Vehicle Faction (requires DLC/mod)";
-		values[] = {0, 1, 2, 3, 4, 5, 6, 7};
-		texts[] = {"All loaded content", "Vanilla + official DLC only", "CUP", "RHS", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Match enemy faction"};
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+		texts[] = {"All loaded content", "Vanilla + official DLC only", "CUP", "RHS", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Match enemy faction", "Northern Fronts CW + RHS"};
 		default = 7;
 	};
 

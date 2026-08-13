@@ -449,6 +449,8 @@ private _passesVehFilter = switch (_vehFactionParam) do {
     case 4: { { (toLower _this select [0,3]) == "gm_" } };
     case 5: { { (toLower _this select [0,3]) == "vn_" } };
     case 6: { { (toLower _this select [0,5]) == "csla_" } };
+    // NFCW + RHS: NFCW ships no armour, so armoured vehicles come from RHS only.
+    case 8: { { (toLower _this select [0,3]) == "rhs" } };
     default { { true } };
 };
 
