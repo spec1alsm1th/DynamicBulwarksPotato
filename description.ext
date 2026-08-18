@@ -211,10 +211,18 @@ class Params
 
 	class LOOT_FACTION
 	{
-		title = "Weapon, Gear & Vehicle Faction (requires DLC/mod)";
+		title = "Lootable Weapons & Gear - what players can find (requires DLC/mod)";
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-		texts[] = {"All loaded content", "Vanilla + official DLC only", "CUP", "RHS", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Match enemy faction", "Northern Fronts CW (enemies keep own weapons)"};
+		texts[] = {"All loaded content", "Vanilla + official DLC only", "CUP", "RHS", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Match enemy faction", "Northern Fronts CW"};
 		default = 7;
+	};
+
+	class ENEMY_GEAR_FACTION
+	{
+		title = "Enemy Weapons, Gear & Vehicles (requires DLC/mod)";
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+		texts[] = {"Match enemy faction (default)", "All loaded content", "Vanilla + official DLC only", "CUP (all)", "CUP - Takistani", "CUP - Russian", "CUP - ChDKZ", "RHS (all)", "RHS - AFRF", "RHS - USAF", "RHS - GREF", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Northern Fronts CW", "RHS - SAF"};
+		default = 0;
 	};
 
 	class HOSTILE_MULTIPLIER
