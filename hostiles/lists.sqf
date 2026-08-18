@@ -366,6 +366,107 @@ if (count List_Viper == 0) then { diag_log "DynBulwarks: Viper list still empty,
 if (count List_INDEP == 0) then { diag_log "DynBulwarks: INDEP list empty, using vanilla fallback"; List_INDEP = call _vanillaINDEP; };
 if (count List_NATO == 0)  then { diag_log "DynBulwarks: NATO list empty, using vanilla fallback";  List_NATO  = call _vanillaNATO; };
 
+// --- Enemy gear faction: unit source override ---
+// When ENEMY_GEAR_FACTION names a specific faction, enemy infantry comes from
+// that faction's CfgGroups entry instead of the HOSTILE_FACTION selection.
+// Units keep their own config loadouts, which is what preserves role kit.
+// List_NATO and List_Defectors are deliberately untouched: friendly paratroops
+// stay under FRIENDLY_FACTION's control.
+if (_gearParam > 2) then {
+    private _gearOPFOR = [];
+    private _gearViper = [];
+    switch (_gearParam) do {
+        case 3: {   // CUP (all)
+            _gearOPFOR = ["East", "CUP_O_TK", "Infantry", ""] call _unitsFromFaction;
+            _gearViper = ["East", "CUP_O_RU", "Infantry", ""] call _unitsFromFaction;
+        };
+        case 4: {   // CUP - Takistani
+            _gearOPFOR = ["East", "CUP_O_TK", "Infantry", ""] call _unitsFromFaction;
+            _gearViper = _gearOPFOR;
+        };
+        case 5: {   // CUP - Russian
+            _gearOPFOR = ["East", "CUP_O_RU", "Infantry", ""] call _unitsFromFaction;
+            _gearViper = _gearOPFOR;
+        };
+        case 6: {   // CUP - ChDKZ
+            _gearOPFOR = ["East", "CUP_O_ChDKZ", "Infantry", ""] call _unitsFromFaction;
+            _gearViper = _gearOPFOR;
+        };
+        case 7: {   // RHS (all)
+            _gearOPFOR = ["East", "rhs_faction_msv", "rhs_group_rus_msv_infantry", ""] call _unitsFromFaction;
+            _gearViper = ["East", "rhs_faction_vdv", "rhs_group_rus_vdv_infantry", ""] call _unitsFromFaction;
+        };
+        case 8: {   // RHS - AFRF
+            _gearOPFOR = ["East", "rhs_faction_msv", "rhs_group_rus_msv_infantry", ""] call _unitsFromFaction;
+            _gearViper = ["East", "rhs_faction_vdv", "rhs_group_rus_vdv_infantry", ""] call _unitsFromFaction;
+        };
+        case 9: {   // RHS - USAF
+            _gearOPFOR = ["West", "rhs_faction_usarmy_d", "rhs_group_nato_usarmy_d_infantry", ""] call _unitsFromFaction;
+            _gearViper = _gearOPFOR;
+        };
+        case 10: {  // RHS - GREF
+            private _gref = [["East","rhsgref_faction_chdkz"],["Indep","rhsgref_faction_nationalist"],["West","rhsgref_faction_cdf_ground"]] call _tryFindFaction;
+            if ((_gref select 1) != "") then {
+                _gearOPFOR = [_gref select 0, _gref select 1, "Infantry", ""] call _unitsFromFaction;
+                _gearViper = _gearOPFOR;
+            };
+        };
+        case 11: {  // Global Mobilization
+            private _gm = [["East","gm_gc"],["East","gm_gc_army"],["East","gm_gc_mil"]] call _tryFindFaction;
+            if ((_gm select 1) != "") then {
+                _gearOPFOR = [_gm select 0, _gm select 1, "Infantry", ""] call _unitsFromFaction;
+                _gearViper = _gearOPFOR;
+            };
+        };
+        case 12: {  // S.O.G. Prairie Fire
+            private _pavn = [["East","vn_o_pavn"],["East","O_PAVN"],["East","vn_o_army_pavn"]] call _tryFindFaction;
+            if ((_pavn select 1) != "") then {
+                _gearOPFOR = [_pavn select 0, _pavn select 1, "Infantry", ""] call _unitsFromFaction;
+                private _vc = [["East","vn_o_vc"],["Indep","vn_i_vc"],["East","O_VC"]] call _tryFindFaction;
+                if ((_vc select 1) != "") then {
+                    _gearViper = [_vc select 0, _vc select 1, "Infantry", ""] call _unitsFromFaction;
+                } else {
+                    _gearViper = _gearOPFOR;
+                };
+            };
+        };
+        case 13: {  // CSLA Iron Curtain
+            private _csla = [["East","CSLA"],["East","csla_faction"],["East","csla"]] call _tryFindFaction;
+            if ((_csla select 1) != "") then {
+                _gearOPFOR = [_csla select 0, _csla select 1, "Infantry", ""] call _unitsFromFaction;
+                _gearViper = _gearOPFOR;
+            };
+        };
+        case 15: {  // RHS - SAF (Serbian Armed Forces). RHS ships them on more
+                    // than one side, so try each rather than assuming East.
+            private _saf = [["East","rhssaf_faction_army"],["Indep","rhssaf_faction_army"],["West","rhssaf_faction_army"],["Indep","rhssaf_faction_un"]] call _tryFindFaction;
+            if ((_saf select 1) != "") then {
+                _gearOPFOR = [_saf select 0, _saf select 1, "Infantry", ""] call _unitsFromFaction;
+                _gearViper = _gearOPFOR;
+            };
+        };
+        case 14: {  // Northern Fronts CW
+            {
+                private _pick = if (["Indep", _x] call _isFactionLoaded) then { _x } else { _x + "_W" };
+                if (["Indep", _pick] call _isFactionLoaded) then {
+                    private _catUnits = ["Indep", _pick, "Infantry", ""] call _unitsFromFaction;
+                    { _gearOPFOR pushBackUnique _x } forEach _catUnits;
+                };
+            } forEach ["NFCW_80", "NFCW_88"];
+            _gearViper = _gearOPFOR;
+        };
+    };
+
+    if (count _gearOPFOR > 0) then {
+        List_OPFOR = _gearOPFOR;
+        List_Viper = if (count _gearViper > 0) then { _gearViper } else { _gearOPFOR };
+        List_INDEP = List_OPFOR + List_Viper;
+        diag_log format ["DynBulwarks: ENEMY_GEAR_FACTION %1 -> %2 OPFOR / %3 Viper units", _gearParam, count List_OPFOR, count List_Viper];
+    } else {
+        diag_log format ["DynBulwarks: ENEMY_GEAR_FACTION %1 produced no units, keeping HOSTILE_FACTION lists (OPFOR=%2)", _gearParam, count List_OPFOR];
+    };
+};
+
 // Defectors keep the HOSTILE_FACTION-derived friendly models (e.g. RHS US Army when
 // HOSTILE_FACTION = RHS), so they still read as turncoats of the enemy's own war.
 // Captured BEFORE the friendly override below, which only affects paratroops.
