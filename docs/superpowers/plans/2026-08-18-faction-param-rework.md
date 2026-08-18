@@ -205,7 +205,7 @@ Adds the new lobby parameter and retitles `LOOT_FACTION`. This task is config on
 **Interfaces:**
 - Consumes: nothing.
 - Produces: parameter `ENEMY_GEAR_FACTION`, integer values `0`–`14`, default `0`. Tasks 3 and 4 read it with `["ENEMY_GEAR_FACTION", 0] call BIS_fnc_getParamValue`. The value meanings are fixed here and must not be renumbered later:
-  `0` Match enemy faction, `1` All loaded content, `2` Vanilla + official DLC only, `3` CUP (all), `4` CUP Takistani, `5` CUP Russian, `6` CUP ChDKZ, `7` RHS (all), `8` RHS AFRF, `9` RHS USAF, `10` RHS GREF, `11` Global Mobilization, `12` S.O.G. Prairie Fire, `13` CSLA Iron Curtain, `14` Northern Fronts CW.
+  `0` Match enemy faction, `1` All loaded content, `2` Vanilla + official DLC only, `3` CUP (all), `4` CUP Takistani, `5` CUP Russian, `6` CUP ChDKZ, `7` RHS (all), `8` RHS AFRF, `9` RHS USAF, `10` RHS GREF, `11` Global Mobilization, `12` S.O.G. Prairie Fire, `13` CSLA Iron Curtain, `14` Northern Fronts CW, `15` RHS SAF.
 
 - [ ] **Step 1: Retitle `LOOT_FACTION` and add the new parameter**
 
@@ -235,8 +235,8 @@ with these two classes:
 	class ENEMY_GEAR_FACTION
 	{
 		title = "Enemy Weapons, Gear & Vehicles (requires DLC/mod)";
-		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-		texts[] = {"Match enemy faction (default)", "All loaded content", "Vanilla + official DLC only", "CUP (all)", "CUP - Takistani", "CUP - Russian", "CUP - ChDKZ", "RHS (all)", "RHS - AFRF", "RHS - USAF", "RHS - GREF", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Northern Fronts CW"};
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+		texts[] = {"Match enemy faction (default)", "All loaded content", "Vanilla + official DLC only", "CUP (all)", "CUP - Takistani", "CUP - Russian", "CUP - ChDKZ", "RHS (all)", "RHS - AFRF", "RHS - USAF", "RHS - GREF", "Global Mobilization", "S.O.G. Prairie Fire", "CSLA Iron Curtain", "Northern Fronts CW", "RHS - SAF"};
 		default = 0;
 	};
 ```
@@ -251,7 +251,7 @@ Run:
 grep -n "class ENEMY_GEAR_FACTION" -A 7 description.ext
 ```
 
-Expected: the class prints with `values[]` containing 15 entries, `texts[]` containing 15 entries, and `default = 0;`. Count them — a `values[]`/`texts[]` length mismatch makes Arma silently drop the parameter from the lobby.
+Expected: the class prints with `values[]` containing 16 entries, `texts[]` containing 16 entries, and `default = 0;`. Count them — a `values[]`/`texts[]` length mismatch makes Arma silently drop the parameter from the lobby.
 
 - [ ] **Step 3: Commit**
 
@@ -329,6 +329,7 @@ private _vehPrefixFilter = switch (_gearResolved) do {
     case 13: { { (toLower _this select [0,5]) == "csla_" } };
     // NFCW ships no armour of its own, so armour comes from RHS.
     case 14: { { (toLower _this select [0,3]) == "rhs" } };
+    case 15: { { (toLower _this select [0,7]) == "rhssaf_" } };
     default { { true } };
 };
 
@@ -341,6 +342,7 @@ private _vehFactionNames = switch (_gearResolved) do {
     case 8: { ["rhs_faction_msv", "rhs_faction_vdv", "rhs_faction_vmf", "rhs_faction_vv", "rhs_faction_vpvo", "rhs_faction_rva"] };
     case 9: { ["rhs_faction_usarmy_d", "rhs_faction_usarmy_wd", "rhs_faction_usmc_d", "rhs_faction_usmc_wd", "rhs_faction_socom"] };
     case 10: { ["rhsgref_faction_cdf_ground", "rhsgref_faction_chdkz", "rhsgref_faction_nationalist", "rhsgref_faction_un"] };
+    case 15: { ["rhssaf_faction_army", "rhssaf_faction_airforce", "rhssaf_faction_un"] };
     default { [] };
 };
 
@@ -524,6 +526,14 @@ if (_gearParam > 2) then {
             private _csla = [["East","CSLA"],["East","csla_faction"],["East","csla"]] call _tryFindFaction;
             if ((_csla select 1) != "") then {
                 _gearOPFOR = [_csla select 0, _csla select 1, "Infantry", ""] call _unitsFromFaction;
+                _gearViper = _gearOPFOR;
+            };
+        };
+        case 15: {  // RHS - SAF (Serbian Armed Forces; RHS ships them on more
+                    // than one side, so try each rather than assuming East)
+            private _saf = [["East","rhssaf_faction_army"],["Indep","rhssaf_faction_army"],["West","rhssaf_faction_army"],["Indep","rhssaf_faction_un"]] call _tryFindFaction;
+            if ((_saf select 1) != "") then {
+                _gearOPFOR = [_saf select 0, _saf select 1, "Infantry", ""] call _unitsFromFaction;
                 _gearViper = _gearOPFOR;
             };
         };
