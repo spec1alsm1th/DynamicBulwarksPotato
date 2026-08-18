@@ -1,6 +1,6 @@
 onLoadMission = "dynamicBulwarks";
 onLoadIntro = "Defend yourself";
-onLoadName = "dynamicBulwarks v1.1.0";
+onLoadName = "dynamicBulwarks v1.1.1";
 briefingName = "dynamicBulwarks";
 overviewText = "Survive by scavenging equipment, in a randomly selected city, against ever increasing waves of hostiles.";
 author = "Hilltop & omNomios";

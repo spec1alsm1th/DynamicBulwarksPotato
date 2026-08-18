@@ -238,5 +238,47 @@ if (count (List_Mines + List_Grenades + List_Charges) == 0) then {
     diag_log format ["DynBulwarks: unfiltered explosive fallback found %1 mines, %2 grenades, %3 charges", count List_Mines, count List_Grenades, count List_Charges];
 };
 
+// A loot faction whose mod is not loaded leaves these pools empty. spawnLoot.sqf
+// then calls selectRandom on an empty array, which returns nil, and every loot
+// spawn in every building throws 'Undefined variable _weapon' / '_clothes'.
+// Backpacks and explosives already fall back to an unfiltered scan above; weapons
+// and apparel were missed. Same treatment here.
+if (count (List_Primaries + List_Secondaries + List_Launchers) == 0) then {
+    diag_log "DynBulwarks: no weapons passed the loot filter, falling back to unfiltered weapons";
+    private _cfgW = configFile >> "CfgWeapons";
+    for "_x" from 0 to (count _cfgW - 1) do {
+        private _w = _cfgW select _x;
+        if (isClass _w && {getNumber (_w >> "scope") == 2} && {!isClass (_w >> "LinkedItems")} && {count getArray (_w >> "magazines") != 0}) then {
+            switch (getNumber (_w >> "type")) do {
+                case 1: { List_Primaries pushBack configName _w };
+                case 3: { List_Secondaries pushBack configName _w };
+                case 4: { List_Launchers pushBack configName _w };
+            };
+        };
+    };
+    diag_log format ["DynBulwarks: unfiltered weapon fallback found %1 primaries, %2 secondaries, %3 launchers", count List_Primaries, count List_Secondaries, count List_Launchers];
+};
+
+if (count (List_Hats + List_Uniforms + List_Vests + List_Glasses) == 0) then {
+    diag_log "DynBulwarks: no apparel passed the loot filter, falling back to unfiltered apparel";
+    private _cfgW = configFile >> "CfgWeapons";
+    for "_x" from 0 to (count _cfgW - 1) do {
+        private _w = _cfgW select _x;
+        if (isClass _w && {getNumber (_w >> "scope") == 2} && {isClass (_w >> "ItemInfo")}) then {
+            switch (getNumber (_w >> "ItemInfo" >> "Type")) do {
+                case 605: { List_Hats pushBack configName _w };
+                case 801: { List_Uniforms pushBack configName _w };
+                case 701: { List_Vests pushBack configName _w };
+            };
+        };
+    };
+    private _cfgG = configFile >> "CfgGlasses";
+    for "_x" from 0 to (count _cfgG - 1) do {
+        private _g = _cfgG select _x;
+        if (isClass _g && {getNumber (_g >> "scope") == 2}) then { List_Glasses pushBack configName _g };
+    };
+    diag_log format ["DynBulwarks: unfiltered apparel fallback found %1 hats, %2 uniforms, %3 vests, %4 glasses", count List_Hats, count List_Uniforms, count List_Vests, count List_Glasses];
+};
+
 List_AllWeapons = List_Primaries + List_Secondaries + List_Launchers;
 List_AllClothes = List_Hats + List_Uniforms + List_Glasses;

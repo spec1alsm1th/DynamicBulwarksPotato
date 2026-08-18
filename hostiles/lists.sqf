@@ -182,13 +182,21 @@ List_NATO  = [];
 
 switch (_factionParam) do {
     case 1: {
-        // CUP factions
-        if (["East", "CUP_O_TK"] call _isFactionLoaded) then {
-            diag_log "DynBulwarks: Using CUP factions (CfgGroups)";
-            List_OPFOR = ["East", "CUP_O_TK", "Infantry", ""] call _unitsFromFaction;
+        // CUP factions. Verified against CUP Units 1.19 configs: the Takistani
+        // ARMY has no CfgGroups entry at all (cup_creatures_people_military_taki
+        // ships no CfgGroups), and the US faction is CUP_B_US_Army, not CUP_B_US.
+        // Both old names silently failed, dropping every CUP game to the
+        // CfgVehicles prefix scan. Try real names in preference order instead.
+        private _cupTK = [["East","CUP_O_TK"],["East","CUP_O_TK_MILITIA"],["East","CUP_O_TK_INS"]] call _tryFindFaction;
+        if ((_cupTK select 1) != "") then {
+            diag_log format ["DynBulwarks: Using CUP factions (CfgGroups, TK=%1)", _cupTK select 1];
+            List_OPFOR = [_cupTK select 0, _cupTK select 1, "Infantry", ""] call _unitsFromFaction;
             List_Viper = ["East", "CUP_O_RU", "Infantry", ""] call _unitsFromFaction;
             List_INDEP = ["East", "CUP_O_ChDKZ", "Infantry", ""] call _unitsFromFaction;
-            List_NATO = ["West", "CUP_B_US", "Infantry", ""] call _unitsFromFaction;
+            private _cupUS = [["West","CUP_B_US_Army"],["West","CUP_B_US"],["West","CUP_B_USMC"]] call _tryFindFaction;
+            if ((_cupUS select 1) != "") then {
+                List_NATO = [_cupUS select 0, _cupUS select 1, "Infantry", ""] call _unitsFromFaction;
+            };
         } else {
             diag_log "DynBulwarks: CUP CfgGroups not found, will try CfgVehicles scan";
         };
@@ -377,11 +385,13 @@ if (_gearParam > 2) then {
     private _gearViper = [];
     switch (_gearParam) do {
         case 3: {   // CUP (all)
-            _gearOPFOR = ["East", "CUP_O_TK", "Infantry", ""] call _unitsFromFaction;
+            private _tk = [["East","CUP_O_TK"],["East","CUP_O_TK_MILITIA"],["East","CUP_O_TK_INS"]] call _tryFindFaction;
+            if ((_tk select 1) != "") then { _gearOPFOR = [_tk select 0, _tk select 1, "Infantry", ""] call _unitsFromFaction; };
             _gearViper = ["East", "CUP_O_RU", "Infantry", ""] call _unitsFromFaction;
         };
-        case 4: {   // CUP - Takistani
-            _gearOPFOR = ["East", "CUP_O_TK", "Infantry", ""] call _unitsFromFaction;
+        case 4: {   // CUP - Takistani (the army has no CfgGroups; militia does)
+            private _tk = [["East","CUP_O_TK"],["East","CUP_O_TK_MILITIA"],["East","CUP_O_TK_INS"]] call _tryFindFaction;
+            if ((_tk select 1) != "") then { _gearOPFOR = [_tk select 0, _tk select 1, "Infantry", ""] call _unitsFromFaction; };
             _gearViper = _gearOPFOR;
         };
         case 5: {   // CUP - Russian
@@ -439,7 +449,7 @@ if (_gearParam > 2) then {
         };
         case 15: {  // RHS - SAF (Serbian Armed Forces). RHS ships them on more
                     // than one side, so try each rather than assuming East.
-            private _saf = [["East","rhssaf_faction_army"],["Indep","rhssaf_faction_army"],["West","rhssaf_faction_army"],["Indep","rhssaf_faction_un"]] call _tryFindFaction;
+            private _saf = [["East","rhssaf_faction_army_opfor"],["Indep","rhssaf_faction_army"],["Indep","rhssaf_faction_un"]] call _tryFindFaction;
             if ((_saf select 1) != "") then {
                 _gearOPFOR = [_saf select 0, _saf select 1, "Infantry", ""] call _unitsFromFaction;
                 _gearViper = _gearOPFOR;
@@ -454,6 +464,40 @@ if (_gearParam > 2) then {
                 };
             } forEach ["NFCW_80", "NFCW_88"];
             _gearViper = _gearOPFOR;
+        };
+    };
+
+    // CfgGroups faction names are not reliable across mod versions - the SOG and GM
+    // lookups have been failing on every run and only survive because HOSTILE_FACTION
+    // falls back to a CfgVehicles prefix scan. Do the same here rather than silently
+    // leaving the enemy gear faction with no effect.
+    if (count _gearOPFOR == 0) then {
+        private _prefix = switch (_gearParam) do {
+            case 3: { "CUP_O_" };
+            case 4: { "CUP_O_TK" };
+            case 5: { "CUP_O_RU" };
+            case 6: { "CUP_O_ChDKZ" };
+            case 7: { "rhs_" };
+            case 8: { "rhs_" };
+            case 9: { "rhsusf_" };
+            case 10: { "rhsgref_" };
+            case 11: { "gm_gc" };
+            case 12: { "vn_o_" };
+            case 13: { "csla_" };
+            case 14: { "NFCW" };
+            case 15: { "rhssaf_" };
+            default { "" };
+        };
+        if (_prefix != "") then {
+            diag_log format ["DynBulwarks: ENEMY_GEAR_FACTION %1 CfgGroups lookup empty, scanning CfgVehicles for prefix %2", _gearParam, _prefix];
+            // side 0 = East, 2 = Indep, 1 = West. Try each; mods place factions differently.
+            {
+                if (count _gearOPFOR == 0) then {
+                    _gearOPFOR = [_x, _prefix] call _scanInfantryBySide;
+                };
+            } forEach [0, 2, 1];
+            _gearViper = _gearOPFOR;
+            diag_log format ["DynBulwarks: ENEMY_GEAR_FACTION %1 prefix scan found %2 units", _gearParam, count _gearOPFOR];
         };
     };
 
@@ -574,13 +618,13 @@ private _vehPrefixFilter = switch (_gearResolved) do {
 // Per-faction options additionally require the vehicle's config "faction" to be
 // one of these. Empty means "no faction restriction, prefix test only".
 private _vehFactionNames = switch (_gearResolved) do {
-    case 4: { ["cup_o_tk", "cup_o_tk_ins", "cup_o_tk_mil"] };
+    case 4: { ["cup_o_tk", "cup_o_tk_militia", "cup_o_tk_ins"] };
     case 5: { ["cup_o_ru", "cup_o_ru_air", "cup_o_rus"] };
     case 6: { ["cup_o_chdkz", "cup_o_chdkz_ins"] };
     case 8: { ["rhs_faction_msv", "rhs_faction_vdv", "rhs_faction_vmf", "rhs_faction_vv", "rhs_faction_vpvo", "rhs_faction_rva"] };
     case 9: { ["rhs_faction_usarmy_d", "rhs_faction_usarmy_wd", "rhs_faction_usmc_d", "rhs_faction_usmc_wd", "rhs_faction_socom"] };
     case 10: { ["rhsgref_faction_cdf_ground", "rhsgref_faction_chdkz", "rhsgref_faction_nationalist", "rhsgref_faction_un"] };
-    case 15: { ["rhssaf_faction_army", "rhssaf_faction_airforce", "rhssaf_faction_un"] };
+    case 15: { ["rhssaf_faction_army_opfor", "rhssaf_faction_army", "rhssaf_faction_un"] };
     default { [] };
 };
 

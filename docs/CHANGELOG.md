@@ -1,5 +1,45 @@
 # Changelog
 
+## v1.1.1 — 2026-08-18
+
+Bug fixes found by auditing the server RPT logs. No behaviour changes to
+anything that was already working.
+
+### Loot pools could end up empty
+
+`loot/lists.sqf` fell back to an unfiltered scan when a loot faction produced
+no backpacks or no explosives, but not when it produced no **weapons** or
+**apparel**. Selecting a loot faction whose mod is not installed left those
+pools empty, and `selectRandom` on an empty array returns nil — so every loot
+spawn in every building threw. The 2026-08-14 log carried 444
+`Undefined variable: _weapon` and 217 `_clothes` errors from
+`loot/spawnLoot.sqf` for exactly this reason. Both pools now fall back the
+same way backpacks and explosives already did.
+
+### Faction lookups used classnames that do not exist
+
+Verified against the installed mod configs by extracting them from the PBOs:
+
+- **CUP Takistani army has no `CfgGroups` entry at all**, so the old
+  `CUP_O_TK` test failed and every CUP game silently dropped to the
+  CfgVehicles prefix scan. Now tries `CUP_O_TK`, then `CUP_O_TK_MILITIA`,
+  then `CUP_O_TK_INS`.
+- **CUP US faction is `CUP_B_US_Army`**, not `CUP_B_US`.
+- **RHS SAF east faction is `rhssaf_faction_army_opfor`**;
+  `rhssaf_faction_army` is Independent and `rhssaf_faction_airforce` does not
+  exist at all.
+- `ENEMY_GEAR_FACTION` now falls back to the same CfgVehicles prefix scan
+  `HOSTILE_FACTION` uses, so a wrong or changed faction name degrades to a
+  working unit list instead of the parameter silently doing nothing. This
+  matters most for S.O.G., whose `CfgGroups` names still cannot be verified —
+  the mod ships encrypted `.ebo` files that no tool can read.
+
+### Not changed
+
+The `"SOG Prairie Fire CfgGroups not found"` line will still appear in the
+RPT on every start. It is harmless: the prefix scan behind it has been
+producing correct PAVN/VC units all along.
+
 ## v1.1.0 — 2026-08-18
 
 ### Lobby parameters
