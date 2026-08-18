@@ -414,7 +414,7 @@ class Params
 		title = "Point Hitmarkers on HUD";
 		values[] = {1, 0};
 		texts[] = {"Yes", "No"};
-		default = 1;
+		default = 0;
 	};
 
 	class BULWARK_LABEL_SPACE
@@ -470,7 +470,7 @@ class Params
 		title = "Loot distribution";
 		values[] = {1, 2, 3, 4};
 		texts[] = {"Every building", "Every second building", "Every third building", "Every fourth building"};
-		default = 2;
+		default = 3;
 	};
 
 	class LOOT_ROOM_DISTRIBUTION
@@ -478,7 +478,7 @@ class Params
 		title = "Loot density";
 		values[] = {1, 2, 3, 4};
 		texts[] = {"Every location", "Every second location", "Every third location", "Every fourth location"};
-		default = 2;
+		default = 3;
 	};
 
 	class LOOT_SUPPLYDROP
@@ -542,7 +542,7 @@ class Params
 		title = "Points awarded for finding the Satellite Dish";
 		values[] = {0, 500, 1000, 2000, 5000};
 		texts[] = {"0", "500", "1000", "2000", "5000"};
-		default = 1000;
+		default = 0;
 	};
 
 	class MONEY_PICKUP_POINTS
@@ -550,7 +550,7 @@ class Params
 		title = "Points awarded for the Collect Points pickup";
 		values[] = {0, 500, 1000, 2000, 5000};
 		texts[] = {"0", "500", "1000", "2000", "5000"};
-		default = 2000;
+		default = 500;
 	};
 
 	class SCORE_KILL
@@ -558,7 +558,7 @@ class Params
 		title = "Points per kill";
 		values[] = {10, 50, 100, 150, 200, 300};
 		texts[] = {"10","50","100","150","200","300"};
-		default = 100;
+		default = 50;
 	};
 
 	class SCORE_HIT
@@ -566,7 +566,7 @@ class Params
 		title = "Points per hit";
 		values[] = {0, 10, 20, 50, 100};
 		texts[] = {"0","10","20","50","100"};
-		default = 20;
+		default = 0;
 	};
 
 	class SCORE_DAMAGE_BASE
@@ -574,7 +574,7 @@ class Params
 		title = "Damage bonus points";
 		values[] = {0, 10, 20, 50, 100};
 		texts[] = {"0","10","20","50","100"};
-		default = 20;
+		default = 0;
 	};
 
 	class PARATROOP_COUNT
