@@ -51,12 +51,6 @@ private _passesLootFilter = switch (_lootFactionParam) do {
     default { { true } };
 };
 
-// Whether enemies get re-armed from the loot pool (spawnInfantry, spawnSquad,
-// airborneWave, specSwticharooWave). Normally on whenever loot is filtered, so
-// enemy weapons match the loot theme. Disabled for case 8: world loot is Finnish,
-// but the Russians keep their own RHS weapons rather than spawning with RK-62s.
-LOOT_REARM_ENEMIES = (_lootFactionParam != 0 && {_lootFactionParam != 8});
-
 diag_log format ["DynBulwarks: Loot faction filter = %1 (filterActive = %2)", _lootFactionParam, _filterLoot];
 
 _hats = [];

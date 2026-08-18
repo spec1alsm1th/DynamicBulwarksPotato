@@ -6,9 +6,10 @@
 *  Domain: Server
 **/
 
-_randWeapons = "RANDOM_WEAPONS" call BIS_fnc_getParamValue;
-_lootFaction = "LOOT_FACTION" call BIS_fnc_getParamValue;
-_replaceWeapons = (_randWeapons == 1 || {_lootFaction != 0 && {isNil "LOOT_REARM_ENEMIES" || {LOOT_REARM_ENEMIES}}});
+// RANDOM_WEAPONS is the only thing that re-arms enemies now. Loot faction
+// filtering no longer touches enemy loadouts, so units keep their config
+// weapons and role kit (AT soldiers keep launchers, etc).
+_replaceWeapons = (("RANDOM_WEAPONS" call BIS_fnc_getParamValue) == 1);
 
 if (defectorWave) then { //determine if defect wave and spawn from List defined in EditMe.sqf
 	unitClasses = DEFECTOR_CLASS;

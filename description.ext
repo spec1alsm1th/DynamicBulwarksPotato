@@ -387,10 +387,10 @@ class Params
 
 	class RANDOM_WEAPONS
 	{
-		title = "Randomize Hostile Weapons";
+		title = "Randomize Hostile Weapons (overrides default role loadouts)";
 		values[] = {1, 0};
 		texts[] = {"Yes", "No"};
-		default = 1;
+		default = 0;
 	};
 
 	class LAMBS_AI
