@@ -819,3 +819,277 @@ gh release view v1.1.0
 ```
 
 Expected: the release prints with the changelog body and one zip asset attached.
+
+---
+
+### Task 8: Add the Livonia (Enoch) mission copy
+
+The mission is terrain-agnostic: `locationLists.sqf` derives cities from `nearestLocations` at runtime, and the bulwark position comes from the host clicking the map (`pickBulwarkPos.sqf`, via `BULWARK_LOCATIONS = List_SpecificPoint` in `editMe.sqf:28`). `mission.sqm` declares no terrain in `addons[]` — the map comes solely from the folder suffix. The stale `bulwark_zone_*` markers feed the unused `List_LocationMarkers` path and already ride along harmlessly on the Altis/Tanoa/Malden clones, so they need no cleanup.
+
+**Files:**
+- None in this repo. This task is server-side only.
+
+**Interfaces:**
+- Consumes: the repo at `origin/master`.
+- Produces: a sixth clone, `S:\arma3server\mpmissions\DynamicBulwarksFDFK.Enoch`, kept in sync by Task 9's script.
+
+- [ ] **Step 1: Clone the repo into the Enoch folder**
+
+```bash
+ssh Administrator@192.168.68.50 "git clone https://github.com/spec1alsm1th/DynamicBulwarksPotato.git S:\arma3server\mpmissions\DynamicBulwarksFDFK.Enoch"
+```
+
+- [ ] **Step 2: Verify the clone landed and matches the others**
+
+```bash
+ssh Administrator@192.168.68.50 "dir /b S:\arma3server\mpmissions | findstr DynamicBulwarksFDFK"
+```
+
+Expected: six entries, including `DynamicBulwarksFDFK.Enoch`. Then confirm it holds a real mission:
+
+```bash
+ssh Administrator@192.168.68.50 "dir /b S:\arma3server\mpmissions\DynamicBulwarksFDFK.Enoch\mission.sqm S:\arma3server\mpmissions\DynamicBulwarksFDFK.Enoch\description.ext"
+```
+
+Expected: both filenames print.
+
+- [ ] **Step 3: Add Enoch to the nightly update loop**
+
+This is done as part of Task 9's rewrite — the terrain list there must read `Cam_Lao_Nam, Altis, Stratis, Tanoa, Malden, Enoch`. If Task 9 is skipped, add `Enoch` to the existing `for %%m in (...)` list in `S:\arma3server\nightly_update.bat` instead.
+
+- [ ] **Step 4: Confirm it appears in mission selection**
+
+Restart the server and open the admin mission list. Expected: `DynamicBulwarksFDFK` appears under Livonia. Note that Livonia is Contact DLC terrain — players without Contact cannot join this copy. Tanoa already sets that precedent with Apex.
+
+---
+
+### Task 9: Versioned mission folder names
+
+Goal: make the running version obvious both on disk and in the lobby. The current `nightly_update.bat` hardcodes `DynamicBulwarksFDFK.%%m`, so a versioned folder name requires discovering the folder rather than naming it. The batch `for` loop is replaced by a PowerShell script; the Steam update and restart logic in the `.bat` are left untouched.
+
+`server.cfg` has no mission rotation entries, so renaming mission folders breaks nothing.
+
+**Files:**
+- Create: `VERSION` (in this repo)
+- Modify: `description.ext` (`onLoadName`), `mission.sqm` (`briefingName`)
+- Create on server: `S:\arma3server\update_missions.ps1`
+- Modify on server: `S:\arma3server\nightly_update.bat`
+
+**Interfaces:**
+- Consumes: nothing from earlier tasks. Task 7 must set `VERSION` to the released version before the release is cut.
+- Produces: mission folders named `DynamicBulwarksFDFK_<sanitised VERSION>.<terrain>`.
+
+- [ ] **Step 1: Add the VERSION file to the repo**
+
+Create `VERSION` containing exactly one line:
+
+```
+v1_1_0_20260818
+```
+
+Underscores only, no dots or hyphens: Arma splits a mission folder name on its **last** dot to find the terrain, and a name with stray punctuation is the kind of thing that fails quietly in the server browser. The PowerShell script sanitises anyway, but keeping the file clean means the folder name is predictable by eye.
+
+- [ ] **Step 2: Stamp the version into the lobby display name**
+
+In `description.ext`, change:
+
+```cpp
+onLoadName = "dynamicBulwarks";
+```
+
+to:
+
+```cpp
+onLoadName = "dynamicBulwarks v1.1.0";
+```
+
+and in `mission.sqm`, change:
+
+```cpp
+briefingName="Dynamic Bulwarks - FDFk Edition (Original by Omnios & Hilltop)";
+```
+
+to:
+
+```cpp
+briefingName="Dynamic Bulwarks - FDFk Edition v1.1.0 (Original by Omnios & Hilltop)";
+```
+
+This half is independent of the server script — even if the rename is reverted, the version stays visible once the mission loads.
+
+- [ ] **Step 3: Write the PowerShell updater on the server**
+
+Create `S:\arma3server\update_missions.ps1`:
+
+```powershell
+# Pulls each DynamicBulwarksFDFK mission clone and renames its folder to match
+# the VERSION file in the repo. Called from nightly_update.bat.
+$ErrorActionPreference = 'Continue'
+$git      = 'C:\Program Files\Git\cmd\git.exe'
+$missions = 'S:\arma3server\mpmissions'
+$log      = 'S:\arma3server\logs\nightly_update.log'
+$terrains = @('Cam_Lao_Nam','Altis','Stratis','Tanoa','Malden','Enoch')
+
+function Write-Log($msg) {
+    $line = "[{0}] {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $msg
+    Add-Content -Path $log -Value $line -Encoding utf8
+}
+
+foreach ($t in $terrains) {
+    # Match both the legacy name and any previously versioned name.
+    $dir = Get-ChildItem -Path $missions -Directory -Filter "DynamicBulwarksFDFK*.$t" |
+           Select-Object -First 1
+    if ($null -eq $dir) { Write-Log "No mission folder found for terrain $t - skipping"; continue }
+
+    Write-Log "Updating $($dir.Name)"
+    & $git -C $dir.FullName fetch origin --prune | ForEach-Object { Write-Log $_ }
+    & $git -C $dir.FullName reset --hard origin/master | ForEach-Object { Write-Log $_ }
+
+    $versionFile = Join-Path $dir.FullName 'VERSION'
+    if (-not (Test-Path $versionFile)) { Write-Log "No VERSION file in $($dir.Name) - leaving name unchanged"; continue }
+
+    # Sanitise: Arma splits the folder name on its last dot to find the terrain,
+    # so anything but letters, digits and underscores is replaced.
+    $version = (Get-Content $versionFile -TotalCount 1).Trim() -replace '[^A-Za-z0-9_]', '_'
+    if ([string]::IsNullOrWhiteSpace($version)) { Write-Log "VERSION in $($dir.Name) is empty - leaving name unchanged"; continue }
+
+    $wanted = "DynamicBulwarksFDFK_$version.$t"
+    if ($dir.Name -eq $wanted) { Write-Log "$($dir.Name) already correctly named"; continue }
+
+    $target = Join-Path $missions $wanted
+    if (Test-Path $target) { Write-Log "Cannot rename $($dir.Name): $wanted already exists"; continue }
+
+    try {
+        Rename-Item -Path $dir.FullName -NewName $wanted -ErrorAction Stop
+        Write-Log "Renamed $($dir.Name) -> $wanted"
+    } catch {
+        Write-Log "Rename of $($dir.Name) failed: $_"
+    }
+}
+```
+
+Two notes for whoever edits this later. The `Get-ChildItem ... -Filter "DynamicBulwarksFDFK*.$t"` glob is what lets the script find a folder it renamed on a previous night — this is the whole reason the batch loop could not do the job. And native `git` stderr is deliberately **not** redirected with `2>&1`: in Windows PowerShell 5.1 that wraps each stderr line in an ErrorRecord and makes a successful `git` look like a failure.
+
+- [ ] **Step 4: Back up and rewire `nightly_update.bat`**
+
+```bash
+ssh Administrator@192.168.68.50 "copy S:\arma3server\nightly_update.bat S:\arma3server\nightly_update.bat.bak-preversioning"
+```
+
+Then in `S:\arma3server\nightly_update.bat`, replace this block:
+
+```bat
+REM --- Reset and pull each mission to origin/master ---
+for %%m in (Cam_Lao_Nam Altis Stratis Tanoa Malden) do (
+    echo [%DATE% %TIME%] Updating mission %%m >> "%LOG%"
+    %GIT% -C "%MISSIONS%\DynamicBulwarksFDFK.%%m" fetch origin --prune >> "%LOG%" 2>&1
+    %GIT% -C "%MISSIONS%\DynamicBulwarksFDFK.%%m" reset --hard origin/master >> "%LOG%" 2>&1
+)
+```
+
+with:
+
+```bat
+REM --- Reset, pull and version-rename each mission clone ---
+echo [%DATE% %TIME%] Running update_missions.ps1 >> "%LOG%"
+powershell -NoProfile -ExecutionPolicy Bypass -File S:\arma3server\update_missions.ps1 >> "%LOG%" 2>&1
+```
+
+Leave the `taskkill`, steamcmd, buildid and restart sections exactly as they are.
+
+- [ ] **Step 5: Dry-run the script before trusting the nightly job**
+
+Run it by hand while the server is stopped:
+
+```bash
+ssh Administrator@192.168.68.50 "powershell -NoProfile -ExecutionPolicy Bypass -File S:\arma3server\update_missions.ps1"
+ssh Administrator@192.168.68.50 "dir /b S:\arma3server\mpmissions | findstr DynamicBulwarksFDFK"
+```
+
+Expected: six folders, each named `DynamicBulwarksFDFK_v1_1_0_20260818.<terrain>`. Then check the log:
+
+```bash
+ssh Administrator@192.168.68.50 "powershell -NoProfile -Command \"Get-Content S:\arma3server\logs\nightly_update.log -Tail 40\""
+```
+
+Expected: one `Renamed ... -> ...` line per terrain, and no `Cannot rename` or `failed` lines.
+
+- [ ] **Step 6: Verify the renamed missions still load**
+
+Restart the server and open the admin mission list. Expected: six `DynamicBulwarksFDFK_v1_1_0_20260818` entries, one per terrain, and the loaded mission shows `dynamicBulwarks v1.1.0`. A renamed folder that does not appear means the name still contains a character Arma rejects — check the sanitiser output in the log.
+
+- [ ] **Step 7: Commit the repo-side half**
+
+```bash
+git add VERSION description.ext mission.sqm
+git commit -m "Add VERSION file and stamp the version into the lobby name"
+```
+
+---
+
+### Task 10: Install CUP on the server
+
+Keimo's per-faction CUP options (values 4, 5, 6) do nothing until CUP is installed — the server's `-mod=` line currently carries `vn`, `cba_a3`, `rhsafrf`, `rhsusaf`, `rhsgref`, `rhssaf`, `northern_fronts_cw`, `military_aviation` and QoL mods, with no CUP at all. The mission handles this correctly (the faction is not found, it logs and falls back), so this is not a blocker for the release — but the options stay inert without it.
+
+**Blocked on a manual step:** only CUP *Terrains* is downloaded on the local machine. CUP Weapons (`497660133`), Units (`497661914`) and Vehicles (`541888371`) must be subscribed to in the Steam Workshop and downloaded to `F:\SteamLibrary` before this task can run. `sync_mods_to_server.bat` already lists them and skips any that are missing.
+
+**Files:**
+- Already modified: `C:\Users\samuli\Documents\claudeadmin\sync_mods_to_server.bat` (backup at `.bak`)
+- Modify on server: `S:\arma3server\start_arma3.bat`
+
+**Interfaces:**
+- Consumes: nothing from earlier tasks.
+- Produces: working CUP options for `ENEMY_GEAR_FACTION` values 3-6 and `LOOT_FACTION` value 2.
+
+- [ ] **Step 1: Confirm the CUP mods are downloaded locally**
+
+```bash
+ls /f/SteamLibrary/steamapps/workshop/content/107410/ | grep -E "^(583496184|497660133|497661914|541888371)$"
+```
+
+Expected: all four IDs print. If any are missing, stop — subscribe in Steam and wait for the download. Running the sync early is harmless (it skips them) but pointless.
+
+- [ ] **Step 2: Sync them to the server**
+
+Run `C:\Users\samuli\Documents\claudeadmin\sync_mods_to_server.bat`. Expected: four `Syncing ...` lines for the CUP IDs and no `[SKIP]` lines for them.
+
+- [ ] **Step 3: Create the junctions**
+
+Every `@mod` folder on this server is a junction into the workshop content directory — match that pattern rather than copying:
+
+```bash
+ssh Administrator@192.168.68.50 "mklink /J S:\arma3server\@cup_terrains_core S:\steamcmd\steamapps\workshop\content\107410\583496184"
+ssh Administrator@192.168.68.50 "mklink /J S:\arma3server\@cup_weapons S:\steamcmd\steamapps\workshop\content\107410\497660133"
+ssh Administrator@192.168.68.50 "mklink /J S:\arma3server\@cup_units S:\steamcmd\steamapps\workshop\content\107410\497661914"
+ssh Administrator@192.168.68.50 "mklink /J S:\arma3server\@cup_vehicles S:\steamcmd\steamapps\workshop\content\107410\541888371"
+```
+
+- [ ] **Step 4: Add them to the launch line**
+
+Back up first:
+
+```bash
+ssh Administrator@192.168.68.50 "copy S:\arma3server\start_arma3.bat S:\arma3server\start_arma3.bat.bak-precup"
+```
+
+Then append to the `-mod=` list in `S:\arma3server\start_arma3.bat`:
+
+```
+;@cup_terrains_core;@cup_weapons;@cup_units;@cup_vehicles
+```
+
+Load order matters: `@cup_terrains_core` must come before the other three. Everything already on the line stays in its current order.
+
+- [ ] **Step 5: Verify CUP loaded**
+
+Restart the server and start a mission with `ENEMY_GEAR_FACTION` = **CUP - Takistani** (4). Expected in the RPT:
+
+```
+DynBulwarks: ENEMY_GEAR_FACTION 4 -> <x> OPFOR / <y> Viper units
+```
+
+with `<x>` greater than zero and no `produced no units` line. Also confirm `List_Armour` is a non-empty list of `CUP_*` classes.
+
+- [ ] **Step 6: Tell players**
+
+Clients need the same four CUP mods to join once they are on the server's `-mod=` line. Announce the mod list change before the next session, or players will be unable to connect.
