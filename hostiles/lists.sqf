@@ -163,6 +163,11 @@ _tryFindFaction = {
 private _factionParam = ["HOSTILE_FACTION", 0] call BIS_fnc_getParamValue;
 diag_log format ["DynBulwarks: HOSTILE_FACTION parameter = %1", _factionParam];
 
+// Enemy gear faction. _gearParam is the raw lobby value; it is read here so
+// both the unit override below and the vehicle filter further down can see it.
+private _gearParam = ["ENEMY_GEAR_FACTION", 0] call BIS_fnc_getParamValue;
+diag_log format ["DynBulwarks: ENEMY_GEAR_FACTION parameter = %1", _gearParam];
+
 // --- Vanilla defaults ---
 private _vanillaOPFOR = { [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSquad"] call _unitsFromGroup };
 private _vanillaINDEP = { [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"] call _unitsFromGroup };
@@ -414,27 +419,31 @@ if (_factionParam != 0) then {
 
 diag_log format ["DynBulwarks: List_Bandits=%1 List_OPFOR=%2 List_Viper=%3 List_INDEP=%4 List_NATO=%5 List_Defectors=%6", count List_Bandits, count List_OPFOR, count List_Viper, count List_INDEP, count List_NATO, count List_Defectors];
 
-// Vehicle faction filter - uses LOOT_FACTION parameter
-private _vehFactionParam = ["LOOT_FACTION", 0] call BIS_fnc_getParamValue;
-
-// Handle "Match enemy faction" option (value 7)
-if (_vehFactionParam == 7) then {
-    _vehFactionParam = switch (_factionParam) do {
-        case 1: { 2 };   // CUP enemies -> CUP vehicles
-        case 2: { 3 };   // RHS enemies -> RHS vehicles
-        case 6: { 4 };   // GM enemies -> GM vehicles
-        case 7: { 5 };   // SOG enemies -> SOG vehicles
-        case 8: { 6 };   // CSLA enemies -> CSLA vehicles
-        default { 1 };   // Vanilla/Apex/Contact/WS -> Vanilla vehicles
+// Vehicle faction filter - uses the ENEMY_GEAR_FACTION parameter.
+// _gearResolved is what "match enemy faction" resolved to.
+private _gearResolved = _gearParam;
+if (_gearParam == 0) then {
+    // "Match enemy faction" resolves to the mod-level option for whatever
+    // HOSTILE_FACTION picked. This reproduces the old LOOT_FACTION default.
+    _gearResolved = switch (_factionParam) do {
+        case 1: { 3 };    // CUP enemies   -> CUP (all)
+        case 2: { 7 };    // RHS enemies   -> RHS (all)
+        case 6: { 11 };   // GM enemies    -> Global Mobilization
+        case 7: { 12 };   // SOG enemies   -> S.O.G. Prairie Fire
+        case 8: { 13 };   // CSLA enemies  -> CSLA Iron Curtain
+        default { 2 };    // Vanilla/Apex/Contact/Western Sahara -> vanilla + DLC
     };
+    diag_log format ["DynBulwarks: ENEMY_GEAR_FACTION 'match enemy faction' resolved to %1", _gearResolved];
 };
 
-private _filterVehicles = _vehFactionParam != 0;
+// Option 1 "All loaded content" is the only value that disables filtering.
+private _filterVehicles = _gearResolved != 1;
 
-// Filter by classname prefix (uses classname string via _this)
-private _passesVehFilter = switch (_vehFactionParam) do {
-    case 1: {
-        // Vanilla + official DLCs: exclude known mod/CDLC prefixes
+// Mod-level classname prefix test. Used directly by the mod-level options and
+// as the fallback when a per-faction config-faction match finds nothing.
+private _vehPrefixFilter = switch (_gearResolved) do {
+    case 2: {
+        // Vanilla + official DLC: exclude known mod/CDLC prefixes
         {
             private _n = toLower _this;
             !((_n select [0,4]) == "cup_") &&
@@ -444,17 +453,49 @@ private _passesVehFilter = switch (_vehFactionParam) do {
             {!((_n select [0,5]) == "csla_")}
         }
     };
-    case 2: { { (toLower _this select [0,4]) == "cup_" } };
-    case 3: { { (toLower _this select [0,3]) == "rhs" } };
-    case 4: { { (toLower _this select [0,3]) == "gm_" } };
-    case 5: { { (toLower _this select [0,3]) == "vn_" } };
-    case 6: { { (toLower _this select [0,5]) == "csla_" } };
-    // NFCW + RHS: NFCW ships no armour, so armoured vehicles come from RHS only.
-    case 8: { { (toLower _this select [0,3]) == "rhs" } };
+    case 3: { { (toLower _this select [0,4]) == "cup_" } };
+    case 4: { { (toLower _this select [0,4]) == "cup_" } };
+    case 5: { { (toLower _this select [0,4]) == "cup_" } };
+    case 6: { { (toLower _this select [0,4]) == "cup_" } };
+    case 7: { { (toLower _this select [0,3]) == "rhs" } };
+    case 8: { { (toLower _this select [0,4]) == "rhs_" } };
+    case 9: { { (toLower _this select [0,7]) == "rhsusf_" } };
+    case 10: { { (toLower _this select [0,8]) == "rhsgref_" } };
+    case 11: { { (toLower _this select [0,3]) == "gm_" } };
+    case 12: { { (toLower _this select [0,3]) == "vn_" } };
+    case 13: { { (toLower _this select [0,5]) == "csla_" } };
+    // NFCW ships no armour of its own, so armour comes from RHS.
+    case 14: { { (toLower _this select [0,3]) == "rhs" } };
+    case 15: { { (toLower _this select [0,7]) == "rhssaf_" } };
     default { { true } };
 };
 
-diag_log format ["DynBulwarks: Vehicle faction filter = %1 (filterActive = %2)", _vehFactionParam, _filterVehicles];
+// Per-faction options additionally require the vehicle's config "faction" to be
+// one of these. Empty means "no faction restriction, prefix test only".
+private _vehFactionNames = switch (_gearResolved) do {
+    case 4: { ["cup_o_tk", "cup_o_tk_ins", "cup_o_tk_mil"] };
+    case 5: { ["cup_o_ru", "cup_o_ru_air", "cup_o_rus"] };
+    case 6: { ["cup_o_chdkz", "cup_o_chdkz_ins"] };
+    case 8: { ["rhs_faction_msv", "rhs_faction_vdv", "rhs_faction_vmf", "rhs_faction_vv", "rhs_faction_vpvo", "rhs_faction_rva"] };
+    case 9: { ["rhs_faction_usarmy_d", "rhs_faction_usarmy_wd", "rhs_faction_usmc_d", "rhs_faction_usmc_wd", "rhs_faction_socom"] };
+    case 10: { ["rhsgref_faction_cdf_ground", "rhsgref_faction_chdkz", "rhsgref_faction_nationalist", "rhsgref_faction_un"] };
+    case 15: { ["rhssaf_faction_army", "rhssaf_faction_airforce", "rhssaf_faction_un"] };
+    default { [] };
+};
+
+// Combined test. _this is the classname string; the config lookup is done here
+// so callers keep passing a classname exactly as before.
+private _passesVehFilter = {
+    private _cn = _this;
+    private _ok = _cn call _vehPrefixFilter;
+    if (_ok && {count _vehFactionNames > 0}) then {
+        private _f = toLower getText (configFile >> "CfgVehicles" >> _cn >> "faction");
+        _ok = _f in _vehFactionNames;
+    };
+    _ok
+};
+
+diag_log format ["DynBulwarks: Vehicle faction filter = %1 (filterActive = %2, factionNames = %3)", _gearResolved, _filterVehicles, _vehFactionNames];
 
 _armouredVehicles = [];
 _cfgVehicles = configFile >> "CfgVehicles";
@@ -474,6 +515,25 @@ for "_x" from 0 to (_realentries) do {
   };
 };
 List_Armour = _armouredVehicles;
+
+// A per-faction filter that matches nothing must not silently remove all armour.
+// Re-scan with the mod-level prefix test only.
+if (count List_Armour == 0 && {count _vehFactionNames > 0}) then {
+    diag_log format ["DynBulwarks: no armour matched faction names %1, falling back to the mod-level prefix filter", _vehFactionNames];
+    _vehFactionNames = [];
+    private _retry = [];
+    for "_x" from 0 to (count _cfgVehicles - 1) do {
+        private _cv = _cfgVehicles select _x;
+        if (isClass _cv) then {
+            private _cn = configName _cv;
+            if (getText (_cv >> "vehicleClass") == "Armored" && {getNumber (_cv >> "scope") != 0} && {getText (_cv >> "simulation") != "parachute"} && {count getArray (_cv >> "artilleryAmmo") == 0} && {!_filterVehicles || {_cn call _passesVehFilter}}) then {
+                _retry pushBack _cn;
+            };
+        };
+    };
+    List_Armour = _retry;
+    diag_log format ["DynBulwarks: armour fallback scan found %1 classes", count List_Armour];
+};
 
 // Per-faction armour override: scan CfgVehicles for matching prefixes
 private _armourOverride = switch (_factionParam) do {
