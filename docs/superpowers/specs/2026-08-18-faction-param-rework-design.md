@@ -58,23 +58,33 @@ own weapons under every option now.
 | 0 | Match enemy faction (default) |
 | 1 | All loaded content |
 | 2 | Vanilla + official DLC only |
-| 3 | CUP — Takistani |
-| 4 | CUP — Russian |
-| 5 | CUP — ChDKZ |
-| 6 | RHS — AFRF |
-| 7 | RHS — USAF |
-| 8 | RHS — GREF |
-| 9 | Global Mobilization |
-| 10 | S.O.G. Prairie Fire |
-| 11 | CSLA Iron Curtain |
-| 12 | Northern Fronts CW |
+| 3 | CUP (all) |
+| 4 | CUP — Takistani |
+| 5 | CUP — Russian |
+| 6 | CUP — ChDKZ |
+| 7 | RHS (all) |
+| 8 | RHS — AFRF |
+| 9 | RHS — USAF |
+| 10 | RHS — GREF |
+| 11 | Global Mobilization |
+| 12 | S.O.G. Prairie Fire |
+| 13 | CSLA Iron Curtain |
+| 14 | Northern Fronts CW |
+
+The mod-level "(all)" entries exist so that "Match enemy faction" has a
+mod-wide value to resolve to, reproducing today's default behaviour exactly.
 
 Effects:
 
 - **Vehicles** — replaces `LOOT_FACTION` as the source of the armoured vehicle
-  classname filter in `hostiles/lists.sqf`. Per-faction options filter on the
-  faction-encoded prefixes: `cup_o_tk_`, `cup_o_ru_`, `cup_o_chdkz_`, `rhs_`
-  (AFRF), `rhsusf_`, `rhsgref_`.
+  classname filter in `hostiles/lists.sqf`. Coarse (mod-level) options match on
+  the classname prefix as today. Per-faction options match on the config
+  `faction` property instead of the classname, because CUP encodes faction as a
+  classname *suffix* on vehicles (`CUP_O_T55_TKA`) and prefix matching would
+  fail. The accepted faction values reuse the `CfgGroups` faction classnames
+  already used elsewhere in the file (`CUP_O_TK`, `CUP_O_RU`, `CUP_O_ChDKZ`,
+  `rhs_faction_msv`, ...). A per-faction filter that yields no vehicles falls
+  back to the mod-level prefix filter with a `diag_log` line.
 - **Units** — when set to anything other than 0, rebuilds `List_OPFOR` /
   `List_Viper` / `List_INDEP` from that faction's `CfgGroups` entry using the
   existing `_unitsFromFaction` and `_isFactionLoaded` helpers, overriding what
